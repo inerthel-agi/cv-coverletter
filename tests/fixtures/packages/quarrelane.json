@@ -1,0 +1,553 @@
+{
+  "meta": {
+    "fixture": true,
+    "market": "FR",
+    "language": "fr",
+    "company": "Quarrelane Analytics",
+    "role": "Développeur Python junior",
+    "date": "2026-10-08",
+    "research_level": "limited",
+    "font": "Arial",
+    "margin_in": 0.7,
+    "warnings": [
+      "Offre en ligne inaccessible (https://careers.quarrelane-fixture.invalid/jobs/4471, échec le 2026-10-08) : analyse fondée sur la copie collée par le candidat, non datée. Vérifier que l'offre est toujours ouverte.",
+      "Recherche entreprise limitée : un seul fait confirmé ; personnalisation prudente."
+    ]
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "job-posting",
+      "url": "https://careers.quarrelane-fixture.invalid/jobs/4471",
+      "title": "Offre Développeur Python junior (lien fourni par le candidat)",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": false,
+      "error": "DNS resolution failed"
+    },
+    {
+      "id": "S2",
+      "kind": "user-provided",
+      "url": "tests/fixtures/companies/quarrelane-analytics/job-posting-pasted.md",
+      "title": "Copie de l'offre collée par le candidat (non datée)",
+      "published": "unknown",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": "S3",
+      "kind": "official",
+      "url": "https://quarrelane-analytics.example/careers",
+      "title": "Careers – Quarrelane Analytics",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S5",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/camille-testard-cv.md",
+      "title": "Candidate CV"
+    },
+    {
+      "id": "S6",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/projects.md",
+      "title": "Candidate project notes"
+    }
+  ],
+  "company_claims": [
+    {
+      "id": "C1",
+      "status": "confirmed",
+      "text": "Quarrelane Analytics édite des tableaux de bord de données pour les PME et est basée à Lyon.",
+      "sources": [
+        "S3"
+      ]
+    },
+    {
+      "id": "C2",
+      "status": "hypothesis",
+      "text": "D'après la copie de l'offre, le poste pourrait viser à fiabiliser les imports de données clients qui alimentent les tableaux de bord.",
+      "sources": [
+        "S2"
+      ]
+    },
+    {
+      "id": "C3",
+      "status": "unavailable",
+      "text": "Priorités, clients, actualités et équipe technique : non documentés publiquement.",
+      "sources": []
+    }
+  ],
+  "company_profile": {
+    "type": "unknown",
+    "basis": [],
+    "unit": null,
+    "hiring_triggers": [
+      "C2"
+    ],
+    "note": "C1 décrit ses clients (PME), pas sa propre taille : effectif et structure non documentés"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "title": "RouteWise",
+      "stage": "used",
+      "dates": "Jan 2026 - Apr 2026",
+      "tools": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "pytest",
+        "Docker"
+      ],
+      "facts": [
+        "Capstone, team of 3; Camille owned the backend API and the route-batching heuristic",
+        "Plans delivery routes for volunteer drivers of the Northbridge Community Pantry",
+        "Designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints",
+        "Wrote pytest tests for the API endpoints",
+        "Used by 4 volunteer coordinators during a 3-week pilot",
+        "Docker used for local development only; never deployed with Kubernetes"
+      ],
+      "metrics": [
+        "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
+      ],
+      "source": "S6#routewise"
+    },
+    {
+      "id": "E2",
+      "title": "ShelfScan",
+      "stage": "prototype",
+      "dates": "Oct 2025 - Dec 2025",
+      "tools": [
+        "Python",
+        "PyTorch",
+        "OpenCV"
+      ],
+      "facts": [
+        "Course project that counts products on shelf photos",
+        "Built image preprocessing with OpenCV and trained a detection model with PyTorch",
+        "Trained and tested on a public shelf-image dataset",
+        "Not used in production; accuracy not formally measured"
+      ],
+      "metrics": [],
+      "source": "S6#shelfscan"
+    },
+    {
+      "id": "E3",
+      "title": "AltCheck",
+      "stage": "used",
+      "dates": "Jun 2025 - Aug 2025",
+      "tools": [
+        "JavaScript",
+        "Node.js",
+        "GitHub Actions",
+        "Git"
+      ],
+      "facts": [
+        "GitHub Action that flags images without alt text in HTML pull requests",
+        "Adopted by 3 student club websites"
+      ],
+      "metrics": [],
+      "source": "S6#altcheck"
+    },
+    {
+      "id": "E4",
+      "title": "IT Support Assistant, Northbridge Public Library",
+      "stage": "experience",
+      "dates": "Sep 2023 - May 2026",
+      "tools": [
+        "Python"
+      ],
+      "facts": [
+        "Resolved device and account issues for library staff and patrons",
+        "Wrote a Python script that automated the weekly public-computer reservation report"
+      ],
+      "metrics": [
+        "Supervisor estimated about 2 hours of staff time saved per week"
+      ],
+      "source": "S5"
+    },
+    {
+      "id": "E5",
+      "title": "Teaching Assistant, Introduction to Databases",
+      "stage": "experience",
+      "dates": "Jan 2025 - May 2025",
+      "tools": [
+        "SQL"
+      ],
+      "facts": [
+        "Held weekly office hours for a class of 40 students",
+        "Graded SQL assignments"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E6",
+      "title": "B.S. Computer Science, Northbridge State University",
+      "stage": "coursework",
+      "dates": "Aug 2022 - May 2026",
+      "tools": [],
+      "facts": [
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision",
+        "Degree awarded May 2026"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E7",
+      "title": "Languages",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "French (native)",
+        "English (fluent)"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E8",
+      "title": "Availability",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "Available to start in January 2027",
+        "Open to relocating to Lyon, France"
+      ],
+      "metrics": [],
+      "source": "S5"
+    }
+  ],
+  "job": {
+    "source": "S2",
+    "posting_status": "unverified",
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "Python",
+        "level": "required",
+        "match": [
+          "E1",
+          "E4"
+        ]
+      },
+      {
+        "id": "R2",
+        "text": "SQL (PostgreSQL)",
+        "level": "required",
+        "match": [
+          "E1",
+          "E5"
+        ]
+      },
+      {
+        "id": "R3",
+        "text": "pandas",
+        "level": "required",
+        "match": [],
+        "gap_terms": [
+          "pandas"
+        ]
+      },
+      {
+        "id": "R4",
+        "text": "Français courant",
+        "level": "required",
+        "match": [
+          "E7"
+        ]
+      }
+    ]
+  },
+  "strategy": {
+    "value_proposition": "Développeur Python junior qui a déjà conçu un service FastAPI/PostgreSQL utilisé en pilote et automatisé un rapport de données récurrent.",
+    "arguments": [
+      {
+        "need": "R1, R2",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "high",
+        "placement": "both"
+      },
+      {
+        "need": "C2 (hypothèse imports)",
+        "evidence": [
+          "E4"
+        ],
+        "confidence": "low",
+        "placement": "letter"
+      },
+      {
+        "need": "R3 lacune pandas",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "low",
+        "placement": "letter"
+      }
+    ],
+    "differentiation": "Recherche limitée : personnalisation fondée sur l'offre et sur un seul fait confirmé, sans affirmation invérifiable.",
+    "gaps": [
+      "pandas : aucune expérience",
+      "Offre non vérifiée en ligne"
+    ],
+    "adaptation": [
+      {
+        "lever": "positioning",
+        "choice": "Développeur Python et SQL ayant livré un service FastAPI/PostgreSQL utilisé en pilote",
+        "basis": [
+          "R1",
+          "R2"
+        ]
+      },
+      {
+        "lever": "projects",
+        "choice": "RouteWise en tête (Python, PostgreSQL), AltCheck en appui ; ShelfScan écarté",
+        "basis": [
+          "R1",
+          "R2"
+        ]
+      },
+      {
+        "lever": "experience",
+        "choice": "Automatisation du rapport hebdomadaire mise en avant, rattachée avec prudence à l'hypothèse des imports de données",
+        "basis": [
+          "C2",
+          "R1"
+        ]
+      },
+      {
+        "lever": "keywords",
+        "choice": "Python, SQL, PostgreSQL ; pandas reste une lacune déclarée",
+        "basis": [
+          "R1",
+          "R2",
+          "R3"
+        ]
+      },
+      {
+        "lever": "letter",
+        "choice": "Personnalisation prudente : un seul fait confirmé, hypothèse formulée au conditionnel, français courant attesté",
+        "basis": [
+          "C1",
+          "C2",
+          "R4"
+        ]
+      },
+      {
+        "lever": "register",
+        "choice": "Registre formel français",
+        "basis": [
+          "R4"
+        ]
+      }
+    ]
+  },
+  "cv": {
+    "name": "Camille Testard",
+    "contact": [
+      "Columbus (OH, États-Unis) – mobilité Lyon",
+      "+1 555 0142",
+      "camille.testard@example.com",
+      "portfolio.camille-testard.example"
+    ],
+    "headline": "Développeur Python junior | FastAPI, PostgreSQL, SQL | Disponible en janvier 2027",
+    "sections": [
+      {
+        "title": "Formation",
+        "items": [
+          {
+            "heading": "Bachelor of Science en informatique (diplôme américain)",
+            "subheading": "Northbridge State University",
+            "location": "Columbus, OH",
+            "dates": "août 2022 - mai 2026",
+            "bullets": [
+              {
+                "text": "Cours suivis : structures de données, bases de données, génie logiciel",
+                "evidence": [
+                  "E6"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Projets",
+        "items": [
+          {
+            "heading": "RouteWise - planification de tournées (projet de fin d'études, équipe de 3)",
+            "subheading": "Python, FastAPI, PostgreSQL, pytest",
+            "dates": "janv. 2026 - avr. 2026",
+            "bullets": [
+              {
+                "text": "Développé l'API backend et l'heuristique de regroupement des arrêts d'une application de tournées pour les bénévoles d'une banque alimentaire",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Conçu le schéma PostgreSQL (arrêts, chauffeurs, tournées), exposé via des endpoints REST testés avec pytest",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Pilote de 3 semaines avec 4 coordinateurs, qui ont déclaré un temps de planification par créneau passé d'environ 25 à environ 10 minutes",
+                "evidence": [
+                  "E1"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "AltCheck - contrôle d'accessibilité des pull requests",
+            "subheading": "JavaScript, Node.js, GitHub Actions",
+            "dates": "juin 2025 - août 2025",
+            "bullets": [
+              {
+                "text": "Créé une GitHub Action qui signale les images sans texte alternatif ; adoptée par 3 sites d'associations étudiantes",
+                "evidence": [
+                  "E3"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Expérience",
+        "items": [
+          {
+            "heading": "Assistant support informatique (temps partiel)",
+            "subheading": "Northbridge Public Library",
+            "location": "Columbus, OH",
+            "dates": "sept. 2023 - mai 2026",
+            "bullets": [
+              {
+                "text": "Automatisé le rapport hebdomadaire de réservation des postes publics avec un script Python ; gain estimé par la responsable : environ 2 heures par semaine",
+                "evidence": [
+                  "E4"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Assistant d'enseignement, Introduction aux bases de données",
+            "subheading": "Northbridge State University",
+            "dates": "janv. 2025 - mai 2025",
+            "bullets": [
+              {
+                "text": "Permanences hebdomadaires pour une promotion de 40 étudiants ; correction de devoirs SQL",
+                "evidence": [
+                  "E5"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Compétences",
+        "items": [
+          {
+            "label": "Langages et frameworks",
+            "text": "Python, SQL, JavaScript, FastAPI, Node.js",
+            "evidence": [
+              "E1",
+              "E3",
+              "E5"
+            ]
+          },
+          {
+            "label": "Outils",
+            "text": "PostgreSQL, pytest, Git, GitHub Actions, Docker (développement local)",
+            "evidence": [
+              "E1",
+              "E3"
+            ]
+          },
+          {
+            "label": "Langues",
+            "text": "français (langue maternelle), anglais (courant)",
+            "evidence": [
+              "E7"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "letter": {
+    "date": "Le 8 octobre 2026",
+    "recipient": [
+      "Équipe de recrutement",
+      "Quarrelane Analytics",
+      "Lyon"
+    ],
+    "subject": "Objet : candidature au poste de développeur Python junior",
+    "salutation": "Madame, Monsieur,",
+    "paragraphs": [
+      {
+        "text": "Je vous adresse ma candidature au poste de développeur Python junior chez Quarrelane Analytics. Votre activité d'éditeur de tableaux de bord de données pour les PME, à Lyon, correspond au type d'outil que j'aime construire : des services de données utilisés au quotidien par des équipes qui ne sont pas techniques.",
+        "claims": [
+          "C1"
+        ],
+        "evidence": [
+          "E1"
+        ]
+      },
+      {
+        "text": "Mon projet le plus solide est RouteWise, une application de planification de tournées réalisée en équipe de trois pour les bénévoles d'une banque alimentaire. J'en ai conçu l'API FastAPI, le schéma PostgreSQL et les tests pytest. Lors d'un pilote de trois semaines, les quatre coordinateurs ont déclaré que la planification d'un créneau leur prenait environ 10 minutes au lieu de 25.",
+        "claims": [],
+        "evidence": [
+          "E1"
+        ]
+      },
+      {
+        "text": "D'après l'offre, le poste semble porter en partie sur les imports de données clients. Si c'est bien le cas, j'ai déjà remplacé une compilation manuelle par un script Python à la bibliothèque où je travaillais, et j'ai corrigé des devoirs SQL comme assistant d'enseignement en bases de données.",
+        "claims": [
+          "C2"
+        ],
+        "evidence": [
+          "E4",
+          "E5"
+        ]
+      },
+      {
+        "text": "Je préfère être transparent : je n'ai pas encore utilisé pandas. Mes traitements de données reposent sur SQL et sur Python standard ; me former à pandas sur vos jeux de données serait l'une de mes premières priorités.",
+        "claims": [],
+        "evidence": [
+          "E1",
+          "E4"
+        ],
+        "addresses_gap": true
+      },
+      {
+        "text": "Titulaire d'un Bachelor of Science en informatique obtenu en mai 2026 aux États-Unis, de langue maternelle française et à l'aise en anglais, je suis disponible à partir de janvier 2027 et prêt à m'installer à Lyon. Je serais heureux d'échanger avec vous sur les besoins de votre équipe et sur la manière dont je pourrais y contribuer.",
+        "claims": [],
+        "evidence": [
+          "E6",
+          "E7",
+          "E8"
+        ]
+      }
+    ],
+    "closing": "Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.",
+    "signature": "Camille Testard"
+  },
+  "interview": [
+    {
+      "question": "Comment comptez-vous monter en compétence sur pandas ?",
+      "talking_points": "Lacune assumée ; base SQL et Python ; plan d'apprentissage concret.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ]
+}

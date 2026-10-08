@@ -1,0 +1,6 @@
+# Candidate deliverables and private inputs: never commit
+applications/
+inputs/
+*.local.md
+__pycache__/
+.DS_Store

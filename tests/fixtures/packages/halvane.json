@@ -1,0 +1,655 @@
+{
+  "meta": {
+    "fixture": true,
+    "market": "US",
+    "language": "en",
+    "company": "Halvane Retail Systems",
+    "role": "Junior Software Engineer, Store Platform",
+    "date": "2026-10-08",
+    "research_level": "standard",
+    "warnings": [],
+    "font": "Arial",
+    "margin_in": 0.7
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "official",
+      "url": "https://halvane-retail.example/company",
+      "title": "Halvane Retail Systems - Company",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S2",
+      "kind": "press-release",
+      "url": "https://halvane-retail.example/news/shelfsight-pilot",
+      "title": "Halvane pilots ShelfSight out-of-stock detection",
+      "published": "2026-06-03",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S3",
+      "kind": "engineering-blog",
+      "url": "https://halvane-retail.example/blog/accessible-associate-app",
+      "title": "Building an accessible associate app",
+      "published": "2026-04-15",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S4",
+      "kind": "job-posting",
+      "url": "https://halvane-retail.example/careers/junior-software-engineer-store-platform",
+      "title": "Junior Software Engineer, Store Platform",
+      "published": "2026-09-28",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S7",
+      "kind": "official",
+      "url": "https://halvane-retail.example/careers",
+      "title": "Careers at Halvane",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S5",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/camille-testard-cv.md",
+      "title": "Candidate CV"
+    },
+    {
+      "id": "S6",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/projects.md",
+      "title": "Candidate project notes"
+    }
+  ],
+  "company_claims": [
+    {
+      "id": "C1",
+      "status": "confirmed",
+      "text": "Halvane builds store operations software that store associates use for inventory and shelf replenishment in mid-size grocery chains.",
+      "sources": [
+        "S1"
+      ]
+    },
+    {
+      "id": "C2",
+      "status": "confirmed",
+      "text": "In June 2026 Halvane announced a pilot of ShelfSight, camera-based out-of-stock detection, with two grocery chains.",
+      "sources": [
+        "S2"
+      ]
+    },
+    {
+      "id": "C3",
+      "status": "confirmed",
+      "text": "Halvane committed to WCAG 2.2 AA for its associate mobile app and runs automated accessibility checks in CI on every pull request.",
+      "sources": [
+        "S3"
+      ]
+    },
+    {
+      "id": "C4",
+      "status": "confirmed",
+      "text": "The Store Platform role requires Python or JavaScript, REST APIs, Git and automated testing; computer vision and web accessibility are preferred.",
+      "sources": [
+        "S4"
+      ]
+    },
+    {
+      "id": "C5",
+      "status": "hypothesis",
+      "text": "The Store Platform team may be preparing to extend ShelfSight beyond the pilot.",
+      "sources": [
+        "S2",
+        "S4"
+      ]
+    },
+    {
+      "id": "C6",
+      "status": "confirmed",
+      "text": "Halvane employs about 420 people in Chicago and Toronto; engineering is organised in product teams: Store Platform, Associate App and ShelfSight.",
+      "sources": [
+        "S7"
+      ]
+    }
+  ],
+  "company_profile": {
+    "type": "mid-size",
+    "basis": [
+      "C6"
+    ],
+    "unit": "Store Platform team",
+    "hiring_triggers": [
+      "C2",
+      "C5"
+    ],
+    "note": "\"mid-size grocery chains\" (C1) are customers; Halvane's own size comes from C6"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "title": "RouteWise",
+      "stage": "used",
+      "dates": "Jan 2026 - Apr 2026",
+      "tools": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "pytest",
+        "Docker"
+      ],
+      "facts": [
+        "Capstone, team of 3; Camille owned the backend API and the route-batching heuristic",
+        "Plans delivery routes for volunteer drivers of the Northbridge Community Pantry",
+        "Designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints",
+        "Wrote pytest tests for the API endpoints",
+        "Used by 4 volunteer coordinators during a 3-week pilot",
+        "Docker used for local development only; never deployed with Kubernetes"
+      ],
+      "metrics": [
+        "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
+      ],
+      "source": "S6#routewise"
+    },
+    {
+      "id": "E2",
+      "title": "ShelfScan",
+      "stage": "prototype",
+      "dates": "Oct 2025 - Dec 2025",
+      "tools": [
+        "Python",
+        "PyTorch",
+        "OpenCV"
+      ],
+      "facts": [
+        "Course project that counts products on shelf photos",
+        "Built image preprocessing with OpenCV and trained a detection model with PyTorch",
+        "Trained and tested on a public shelf-image dataset",
+        "Not used in production; accuracy not formally measured"
+      ],
+      "metrics": [],
+      "source": "S6#shelfscan"
+    },
+    {
+      "id": "E3",
+      "title": "AltCheck",
+      "stage": "used",
+      "dates": "Jun 2025 - Aug 2025",
+      "tools": [
+        "JavaScript",
+        "Node.js",
+        "GitHub Actions",
+        "Git"
+      ],
+      "facts": [
+        "GitHub Action that flags images without alt text in HTML pull requests",
+        "Adopted by 3 student club websites"
+      ],
+      "metrics": [],
+      "source": "S6#altcheck"
+    },
+    {
+      "id": "E4",
+      "title": "IT Support Assistant, Northbridge Public Library",
+      "stage": "experience",
+      "dates": "Sep 2023 - May 2026",
+      "tools": [
+        "Python"
+      ],
+      "facts": [
+        "Resolved device and account issues for library staff and patrons",
+        "Wrote a Python script that automated the weekly public-computer reservation report"
+      ],
+      "metrics": [
+        "Supervisor estimated about 2 hours of staff time saved per week"
+      ],
+      "source": "S5"
+    },
+    {
+      "id": "E5",
+      "title": "Teaching Assistant, Introduction to Databases",
+      "stage": "experience",
+      "dates": "Jan 2025 - May 2025",
+      "tools": [
+        "SQL"
+      ],
+      "facts": [
+        "Held weekly office hours for a class of 40 students",
+        "Graded SQL assignments"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E6",
+      "title": "B.S. Computer Science, Northbridge State University",
+      "stage": "coursework",
+      "dates": "Aug 2022 - May 2026",
+      "tools": [],
+      "facts": [
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision",
+        "Degree awarded May 2026"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E7",
+      "title": "Languages",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "French (native)",
+        "English (fluent)"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E8",
+      "title": "Availability",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "Available to start in January 2027",
+        "Open to relocating to Lyon, France"
+      ],
+      "metrics": [],
+      "source": "S5"
+    }
+  ],
+  "job": {
+    "source": "S4",
+    "posting_status": "open",
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "Python or JavaScript",
+        "level": "required",
+        "match": [
+          "E1",
+          "E3"
+        ]
+      },
+      {
+        "id": "R2",
+        "text": "REST APIs",
+        "level": "required",
+        "match": [
+          "E1"
+        ]
+      },
+      {
+        "id": "R3",
+        "text": "Git",
+        "level": "required",
+        "match": [
+          "E3"
+        ]
+      },
+      {
+        "id": "R4",
+        "text": "Automated testing",
+        "level": "required",
+        "match": [
+          "E1"
+        ]
+      },
+      {
+        "id": "R5",
+        "text": "Exposure to computer vision",
+        "level": "preferred",
+        "match": [
+          "E2"
+        ],
+        "note": "prototype only, no metrics"
+      },
+      {
+        "id": "R6",
+        "text": "Web accessibility",
+        "level": "preferred",
+        "match": [
+          "E3"
+        ]
+      }
+    ]
+  },
+  "strategy": {
+    "value_proposition": "Junior engineer whose projects touch both of Halvane's documented bets: a shelf-photo vision prototype and an accessibility check that runs on pull requests, backed by a tested FastAPI service used in a pilot.",
+    "arguments": [
+      {
+        "need": "C3, R6",
+        "evidence": [
+          "E3"
+        ],
+        "confidence": "high",
+        "placement": "both"
+      },
+      {
+        "need": "C2, R5",
+        "evidence": [
+          "E2"
+        ],
+        "confidence": "medium",
+        "placement": "both",
+        "note": "prototype, no metrics: say so"
+      },
+      {
+        "need": "R1, R2, R4",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "high",
+        "placement": "both"
+      }
+    ],
+    "differentiation": "Halvane: ShelfScan and AltCheck lead because of ShelfSight and the WCAG commitment; RouteWise is supporting proof. Brindlewood: RouteWise leads.",
+    "gaps": [
+      "No production computer-vision experience; ShelfScan accuracy never measured"
+    ],
+    "adaptation": [
+      {
+        "lever": "positioning",
+        "choice": "Projects touching both documented bets: shelf-photo vision and accessibility checks on pull requests",
+        "basis": [
+          "C2",
+          "C3",
+          "R5",
+          "R6"
+        ]
+      },
+      {
+        "lever": "projects",
+        "choice": "AltCheck first, ShelfScan second stated as a prototype, RouteWise as proof of tested REST services",
+        "basis": [
+          "C3",
+          "C2",
+          "R6",
+          "R5",
+          "R2",
+          "R4"
+        ]
+      },
+      {
+        "lever": "experience",
+        "choice": "Experience after projects; IT support automation and SQL teaching kept short",
+        "basis": [
+          "R1",
+          "R4"
+        ]
+      },
+      {
+        "lever": "keywords",
+        "choice": "REST APIs, automated testing, accessibility and computer vision in the posting's words; no production vision claimed",
+        "basis": [
+          "R2",
+          "R4",
+          "R5",
+          "R6"
+        ]
+      },
+      {
+        "lever": "letter",
+        "choice": "Open on the ShelfSight pilot and the WCAG commitment, addressed to the Store Platform product team; hedged closing on extending ShelfSight",
+        "basis": [
+          "C2",
+          "C3",
+          "C6",
+          "C5"
+        ]
+      },
+      {
+        "lever": "register",
+        "choice": "Plain product-team tone, like the posting and blog",
+        "basis": [
+          "C4",
+          "C3"
+        ]
+      }
+    ]
+  },
+  "cv": {
+    "name": "Camille Testard",
+    "contact": [
+      "Columbus, OH",
+      "+1 555 0142",
+      "camille.testard@example.com",
+      "portfolio.camille-testard.example"
+    ],
+    "headline": "Junior software engineer | Python, JavaScript, computer vision and accessibility projects",
+    "sections": [
+      {
+        "title": "Education",
+        "items": [
+          {
+            "heading": "Northbridge State University",
+            "subheading": "B.S. Computer Science",
+            "location": "Columbus, OH",
+            "dates": "Aug 2022 - May 2026",
+            "bullets": [
+              {
+                "text": "Relevant coursework: Computer Vision, Software Engineering, Databases",
+                "evidence": [
+                  "E6"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Projects",
+        "items": [
+          {
+            "heading": "AltCheck - accessibility check for pull requests",
+            "subheading": "JavaScript, Node.js, GitHub Actions",
+            "dates": "Jun 2025 - Aug 2025",
+            "bullets": [
+              {
+                "text": "Wrote a GitHub Action that flags images without alt text in HTML pull requests; adopted by 3 student club websites",
+                "evidence": [
+                  "E3"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "ShelfScan - shelf-photo product counter (course prototype)",
+            "subheading": "Python, PyTorch, OpenCV",
+            "dates": "Oct 2025 - Dec 2025",
+            "bullets": [
+              {
+                "text": "Built OpenCV image preprocessing and trained a PyTorch detection model that counts products on shelf photos",
+                "evidence": [
+                  "E2"
+                ]
+              },
+              {
+                "text": "Trained and tested on a public shelf-image dataset; prototype not used in production",
+                "evidence": [
+                  "E2"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "RouteWise - delivery route planner (capstone, team of 3)",
+            "subheading": "Python, FastAPI, PostgreSQL, pytest",
+            "dates": "Jan 2026 - Apr 2026",
+            "bullets": [
+              {
+                "text": "Built a FastAPI backend with REST endpoints over PostgreSQL and covered the endpoints with pytest tests",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Piloted with 4 food-pantry volunteer coordinators for 3 weeks; they reported shift planning time falling from about 25 to about 10 minutes",
+                "evidence": [
+                  "E1"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Experience",
+        "items": [
+          {
+            "heading": "IT Support Assistant (part-time)",
+            "subheading": "Northbridge Public Library",
+            "location": "Columbus, OH",
+            "dates": "Sep 2023 - May 2026",
+            "bullets": [
+              {
+                "text": "Automated the weekly public-computer reservation report with a Python script; supervisor estimated about 2 hours of staff time saved per week",
+                "evidence": [
+                  "E4"
+                ]
+              },
+              {
+                "text": "Resolved device and account issues for library staff and patrons",
+                "evidence": [
+                  "E4"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Teaching Assistant, Introduction to Databases",
+            "subheading": "Northbridge State University",
+            "dates": "Jan 2025 - May 2025",
+            "bullets": [
+              {
+                "text": "Held weekly office hours for a class of 40 students and graded SQL assignments",
+                "evidence": [
+                  "E5"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Skills",
+        "items": [
+          {
+            "label": "Languages and frameworks",
+            "text": "Python, JavaScript, SQL, Node.js, FastAPI, PyTorch and OpenCV (coursework)",
+            "evidence": [
+              "E1",
+              "E2",
+              "E3"
+            ]
+          },
+          {
+            "label": "Tools",
+            "text": "Git, GitHub Actions, pytest, PostgreSQL, Docker (local development)",
+            "evidence": [
+              "E1",
+              "E3"
+            ]
+          },
+          {
+            "label": "Spoken languages",
+            "text": "French (native), English (fluent)",
+            "evidence": [
+              "E7"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "letter": {
+    "date": "October 8, 2026",
+    "recipient": [
+      "Store Platform Hiring Team",
+      "Halvane Retail Systems",
+      "Chicago, IL"
+    ],
+    "subject": "Application: Junior Software Engineer, Store Platform",
+    "salutation": "Dear Halvane Hiring Team,",
+    "paragraphs": [
+      {
+        "text": "I am applying for the Junior Software Engineer role on the Store Platform team at Halvane Retail Systems. Two things Halvane has published match work I have already started: the ShelfSight pilot announced in June 2026 and the commitment to WCAG 2.2 AA for the associate app. The posting also lists computer vision and web accessibility as preferred skills.",
+        "claims": [
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "evidence": [
+          "E2",
+          "E3"
+        ]
+      },
+      {
+        "text": "Accessibility is where my evidence is strongest. I built AltCheck, a GitHub Action that flags images without alt text in HTML pull requests, and three student club websites adopted it. Your engineering blog describes automated accessibility checks running in CI on every pull request, which is the workflow AltCheck was built for: a check that runs where developers already review code.",
+        "claims": [
+          "C3"
+        ],
+        "evidence": [
+          "E3"
+        ]
+      },
+      {
+        "text": "ShelfScan, my computer vision course project, is a prototype rather than a product. I built OpenCV preprocessing and trained a PyTorch model that counts products on shelf photos, using a public dataset, and I never formally measured its accuracy. It taught me how much work separates a classroom model from a store pilot, which is why ShelfSight interests me.",
+        "claims": [
+          "C2"
+        ],
+        "evidence": [
+          "E2"
+        ]
+      },
+      {
+        "text": "For everyday platform work, RouteWise is my most complete project: a FastAPI service with REST endpoints over PostgreSQL, built with two classmates, covered by pytest tests, and used by four food-pantry volunteer coordinators during a three-week pilot.",
+        "claims": [],
+        "evidence": [
+          "E1"
+        ]
+      },
+      {
+        "text": "If the Store Platform team is preparing to extend ShelfSight beyond the pilot, I would be glad to contribute tested services and accessible web features around it. I would welcome a conversation about where the team needs help first.",
+        "claims": [
+          "C5"
+        ],
+        "evidence": [
+          "E1",
+          "E3"
+        ]
+      }
+    ],
+    "closing": "Sincerely,",
+    "signature": "Camille Testard"
+  },
+  "interview": [
+    {
+      "question": "What did ShelfScan teach you about vision in stores?",
+      "talking_points": "Prototype only, public dataset, no accuracy measurement; what I would measure first.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "question": "How does AltCheck decide what to flag?",
+      "talking_points": "Scope: images without alt text in HTML pull requests; adoption by 3 club sites; limits.",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,654 @@
+{
+  "meta": {
+    "fixture": true,
+    "market": "US",
+    "language": "en",
+    "company": "Orvanta Group",
+    "role": "Junior Software Engineer, Field Service Platform",
+    "date": "2026-10-08",
+    "research_level": "standard",
+    "warnings": [],
+    "font": "Arial",
+    "margin_in": 0.7
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "official",
+      "url": "https://orvanta-group.example/investors/annual-report-2025",
+      "title": "Orvanta Group Annual Report 2025",
+      "published": "2026-03-18",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S2",
+      "kind": "official",
+      "url": "https://orvanta-group.example/digital",
+      "title": "Orvanta Digital",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S3",
+      "kind": "engineering-blog",
+      "url": "https://orvanta-group.example/digital/blog/one-pipeline",
+      "title": "One pipeline for every FieldLink team",
+      "published": "2026-06-24",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S4",
+      "kind": "job-posting",
+      "url": "https://orvanta-group.example/careers/jobs/FSP-2291",
+      "title": "Junior Software Engineer, Field Service Platform",
+      "published": "2026-09-15",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S5",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/camille-testard-cv.md",
+      "title": "Candidate CV"
+    },
+    {
+      "id": "S6",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/projects.md",
+      "title": "Candidate project notes"
+    }
+  ],
+  "company_claims": [
+    {
+      "id": "C1",
+      "status": "confirmed",
+      "text": "Orvanta Group manufactures commercial heating and cooling equipment and employs about 12,000 people in 31 countries.",
+      "sources": [
+        "S1"
+      ]
+    },
+    {
+      "id": "C2",
+      "status": "confirmed",
+      "text": "In 2025 the group started a programme to move all field-service operations onto a single digital platform, run by Orvanta Digital, by 2028.",
+      "sources": [
+        "S1"
+      ]
+    },
+    {
+      "id": "C3",
+      "status": "confirmed",
+      "text": "Orvanta Digital is the group's software unit, with teams in Columbus, Ohio, and Lyon, France; its Field Service Platform team builds FieldLink, the app service technicians use to receive work orders and log repairs.",
+      "sources": [
+        "S2"
+      ]
+    },
+    {
+      "id": "C4",
+      "status": "confirmed",
+      "text": "Since June 2026 all FieldLink teams ship through one shared CI pipeline: every pull request needs an approved code review, passing automated tests and a security scan before release.",
+      "sources": [
+        "S3"
+      ]
+    },
+    {
+      "id": "C5",
+      "status": "confirmed",
+      "text": "The role builds and tests backend features for FieldLink work orders, writes SQL against PostgreSQL, contributes to the shared CI pipeline and documents changes for the teams in Columbus and Lyon.",
+      "sources": [
+        "S4"
+      ]
+    },
+    {
+      "id": "C6",
+      "status": "hypothesis",
+      "text": "The Field Service Platform team may be hiring to add FieldLink capacity as more of the group's field-service operations move onto the platform before 2028.",
+      "sources": [
+        "S1",
+        "S4"
+      ]
+    }
+  ],
+  "company_profile": {
+    "type": "multinational",
+    "basis": [
+      "C1"
+    ],
+    "unit": "Orvanta Digital — Field Service Platform team (FieldLink)",
+    "hiring_triggers": [
+      "C2",
+      "C6"
+    ],
+    "note": "research and letter target the unit and its product, not the group"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "title": "RouteWise",
+      "stage": "used",
+      "dates": "Jan 2026 - Apr 2026",
+      "tools": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "pytest",
+        "Docker"
+      ],
+      "facts": [
+        "Capstone, team of 3; Camille owned the backend API and the route-batching heuristic",
+        "Plans delivery routes for volunteer drivers of the Northbridge Community Pantry",
+        "Designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints",
+        "Wrote pytest tests for the API endpoints",
+        "Used by 4 volunteer coordinators during a 3-week pilot",
+        "Docker used for local development only; never deployed with Kubernetes"
+      ],
+      "metrics": [
+        "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
+      ],
+      "source": "S6#routewise"
+    },
+    {
+      "id": "E2",
+      "title": "ShelfScan",
+      "stage": "prototype",
+      "dates": "Oct 2025 - Dec 2025",
+      "tools": [
+        "Python",
+        "PyTorch",
+        "OpenCV"
+      ],
+      "facts": [
+        "Course project that counts products on shelf photos",
+        "Built image preprocessing with OpenCV and trained a detection model with PyTorch",
+        "Trained and tested on a public shelf-image dataset",
+        "Not used in production; accuracy not formally measured"
+      ],
+      "metrics": [],
+      "source": "S6#shelfscan"
+    },
+    {
+      "id": "E3",
+      "title": "AltCheck",
+      "stage": "used",
+      "dates": "Jun 2025 - Aug 2025",
+      "tools": [
+        "JavaScript",
+        "Node.js",
+        "GitHub Actions",
+        "Git"
+      ],
+      "facts": [
+        "GitHub Action that flags images without alt text in HTML pull requests",
+        "Adopted by 3 student club websites"
+      ],
+      "metrics": [],
+      "source": "S6#altcheck"
+    },
+    {
+      "id": "E4",
+      "title": "IT Support Assistant, Northbridge Public Library",
+      "stage": "experience",
+      "dates": "Sep 2023 - May 2026",
+      "tools": [
+        "Python"
+      ],
+      "facts": [
+        "Resolved device and account issues for library staff and patrons",
+        "Wrote a Python script that automated the weekly public-computer reservation report"
+      ],
+      "metrics": [
+        "Supervisor estimated about 2 hours of staff time saved per week"
+      ],
+      "source": "S5"
+    },
+    {
+      "id": "E5",
+      "title": "Teaching Assistant, Introduction to Databases",
+      "stage": "experience",
+      "dates": "Jan 2025 - May 2025",
+      "tools": [
+        "SQL"
+      ],
+      "facts": [
+        "Held weekly office hours for a class of 40 students",
+        "Graded SQL assignments"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E6",
+      "title": "B.S. Computer Science, Northbridge State University",
+      "stage": "coursework",
+      "dates": "Aug 2022 - May 2026",
+      "tools": [],
+      "facts": [
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision",
+        "Degree awarded May 2026"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E7",
+      "title": "Languages",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "French (native)",
+        "English (fluent)"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E8",
+      "title": "Availability",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "Available to start in January 2027",
+        "Open to relocating to Lyon, France"
+      ],
+      "metrics": [],
+      "source": "S5"
+    }
+  ],
+  "job": {
+    "source": "S4",
+    "posting_status": "open",
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "Python or Java",
+        "level": "required",
+        "match": [
+          "E1",
+          "E4"
+        ]
+      },
+      {
+        "id": "R2",
+        "text": "SQL",
+        "level": "required",
+        "match": [
+          "E1",
+          "E5"
+        ]
+      },
+      {
+        "id": "R3",
+        "text": "Git",
+        "level": "required",
+        "match": [
+          "E3",
+          "E1"
+        ]
+      },
+      {
+        "id": "R4",
+        "text": "Code review",
+        "level": "required",
+        "match": [],
+        "gap_terms": [
+          "code review"
+        ],
+        "note": "no formal code review process in the sources"
+      },
+      {
+        "id": "R5",
+        "text": "Automated testing",
+        "level": "required",
+        "match": [
+          "E1",
+          "E3"
+        ]
+      },
+      {
+        "id": "R6",
+        "text": "Azure",
+        "level": "preferred",
+        "match": [],
+        "gap_terms": [
+          "Azure"
+        ]
+      },
+      {
+        "id": "R7",
+        "text": "French or another second language",
+        "level": "preferred",
+        "match": [
+          "E7"
+        ]
+      }
+    ]
+  },
+  "strategy": {
+    "value_proposition": "A junior engineer whose tested FastAPI and PostgreSQL backend (RouteWise) matches the backend work on FieldLink work orders, with a pull-request check (AltCheck) suited to the shared CI pipeline and French and English for documenting changes for the Columbus and Lyon teams.",
+    "arguments": [
+      {
+        "need": "C5, R1, R2, R5",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "high",
+        "placement": "both",
+        "note": "RouteWise as a tested FastAPI/PostgreSQL backend: pytest tests on the endpoints"
+      },
+      {
+        "need": "C4, R5",
+        "evidence": [
+          "E3"
+        ],
+        "confidence": "medium",
+        "placement": "both",
+        "note": "AltCheck, a check that runs on pull requests; adopted by 3 student club websites; personal project"
+      },
+      {
+        "need": "C3, C5, R7",
+        "evidence": [
+          "E7"
+        ],
+        "confidence": "high",
+        "placement": "both",
+        "note": "native French and fluent English for documenting changes for the Columbus and Lyon teams"
+      }
+    ],
+    "differentiation": "Same lead project as Brindlewood, but there it is framed on routing and here on testing, CI and documentation for FieldLink work orders, and unlike Halvane it has no vision or accessibility lead.",
+    "gaps": [
+      "Code review: no formal process in the sources",
+      "Azure: none"
+    ],
+    "adaptation": [
+      {
+        "lever": "positioning",
+        "choice": "Headline and value proposition lead with tested backend work (FastAPI, PostgreSQL, automated testing), not the vision or accessibility projects",
+        "basis": [
+          "C5",
+          "R1",
+          "R2",
+          "R5"
+        ]
+      },
+      {
+        "lever": "projects",
+        "choice": "RouteWise first, with test and schema bullets; AltCheck second, framed as a check that runs on pull requests; ShelfScan left out",
+        "basis": [
+          "C4",
+          "C5",
+          "R5"
+        ]
+      },
+      {
+        "lever": "experience",
+        "choice": "IT support framed around resolving device and account issues for staff and patrons; the teaching assistant role kept to one bullet",
+        "basis": [
+          "C3",
+          "R2"
+        ]
+      },
+      {
+        "lever": "keywords",
+        "choice": "PostgreSQL, SQL and automated testing only where E1 and E5 support them; CI appears only as GitHub Actions pull-request checks (E3); gap terms stay out of the CV",
+        "basis": [
+          "R1",
+          "R2",
+          "R5",
+          "C5"
+        ]
+      },
+      {
+        "lever": "letter",
+        "choice": "Open on FieldLink and the Field Service Platform team inside Orvanta Digital; the 2028 programme only as context",
+        "basis": [
+          "C2",
+          "C3"
+        ]
+      },
+      {
+        "lever": "register",
+        "choice": "Formal and process-aware: name the pipeline's requirements plainly and claim no experience with them",
+        "basis": [
+          "C4",
+          "C5"
+        ]
+      }
+    ]
+  },
+  "cv": {
+    "name": "Camille Testard",
+    "contact": [
+      "Columbus, OH",
+      "+1 555 0142",
+      "camille.testard@example.com",
+      "portfolio.camille-testard.example"
+    ],
+    "headline": "Junior software engineer | Python and FastAPI backends, PostgreSQL, automated testing",
+    "sections": [
+      {
+        "title": "Education",
+        "items": [
+          {
+            "heading": "Northbridge State University",
+            "subheading": "B.S. Computer Science",
+            "location": "Columbus, OH",
+            "dates": "Aug 2022 - May 2026",
+            "bullets": [
+              {
+                "text": "Relevant coursework: Databases, Software Engineering, Data Structures",
+                "evidence": [
+                  "E6"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Projects",
+        "items": [
+          {
+            "heading": "RouteWise - delivery route planner (capstone, team of 3)",
+            "subheading": "Python, FastAPI, PostgreSQL, pytest",
+            "dates": "Jan 2026 - Apr 2026",
+            "bullets": [
+              {
+                "text": "Owned the backend API and the route-batching heuristic; designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Wrote pytest tests for the API endpoints; used by 4 volunteer coordinators during a 3-week pilot",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Coordinators said in a survey that shift planning time fell from about 25 minutes to about 10 minutes",
+                "evidence": [
+                  "E1"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "AltCheck - accessibility check for pull requests",
+            "subheading": "JavaScript, Node.js, GitHub Actions",
+            "dates": "Jun 2025 - Aug 2025",
+            "bullets": [
+              {
+                "text": "Wrote a GitHub Action that runs on HTML pull requests and flags images without alt text",
+                "evidence": [
+                  "E3"
+                ]
+              },
+              {
+                "text": "Adopted by 3 student club websites",
+                "evidence": [
+                  "E3"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Experience",
+        "items": [
+          {
+            "heading": "IT Support Assistant (part-time)",
+            "subheading": "Northbridge Public Library",
+            "location": "Columbus, OH",
+            "dates": "Sep 2023 - May 2026",
+            "bullets": [
+              {
+                "text": "Resolved device and account issues for library staff and patrons",
+                "evidence": [
+                  "E4"
+                ]
+              },
+              {
+                "text": "Automated the weekly public-computer reservation report with a Python script; supervisor estimated about 2 hours of staff time saved per week",
+                "evidence": [
+                  "E4"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Teaching Assistant, Introduction to Databases",
+            "subheading": "Northbridge State University",
+            "dates": "Jan 2025 - May 2025",
+            "bullets": [
+              {
+                "text": "Held weekly office hours for a class of 40 students and graded SQL assignments",
+                "evidence": [
+                  "E5"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Skills",
+        "items": [
+          {
+            "label": "Languages and frameworks",
+            "text": "Python, SQL, JavaScript, Node.js, FastAPI",
+            "evidence": [
+              "E1",
+              "E3",
+              "E5"
+            ]
+          },
+          {
+            "label": "Tools",
+            "text": "PostgreSQL, pytest, GitHub Actions, Git, Docker (local development)",
+            "evidence": [
+              "E1",
+              "E3"
+            ]
+          },
+          {
+            "label": "Spoken languages",
+            "text": "French (native), English (fluent)",
+            "evidence": [
+              "E7"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "letter": {
+    "date": "October 8, 2026",
+    "recipient": [
+      "Field Service Platform Hiring Team",
+      "Orvanta Digital",
+      "Columbus, OH"
+    ],
+    "recipient_source": null,
+    "subject": "Application: Junior Software Engineer, Field Service Platform",
+    "salutation": "Dear Hiring Team,",
+    "paragraphs": [
+      {
+        "text": "I am applying for the Junior Software Engineer role on the Field Service Platform team at Orvanta Digital, the software unit of Orvanta Group. The group plans to move all field-service operations by 2028 onto a single digital platform run by Orvanta Digital, and the team builds FieldLink, the app technicians use to receive work orders and log repairs.",
+        "claims": [
+          "C2",
+          "C3"
+        ],
+        "evidence": [],
+        "addresses_gap": false
+      },
+      {
+        "text": "In a capstone team of three, I owned the FastAPI backend and the route-batching heuristic for RouteWise. I designed its PostgreSQL schema for stops, drivers and routes, wrote pytest tests for the endpoints, and four volunteer coordinators used it in a three-week pilot. It is the same kind of tested backend work the posting describes for FieldLink work orders.",
+        "claims": [
+          "C5"
+        ],
+        "evidence": [
+          "E1"
+        ],
+        "addresses_gap": false
+      },
+      {
+        "text": "Your engineering blog describes one shared CI pipeline for all FieldLink teams, where every pull request needs passing automated tests and a security scan before release. AltCheck is the closest project I have to that pipeline: a GitHub Action that flags images without alt text in HTML pull requests, adopted by three student club websites.",
+        "claims": [
+          "C4"
+        ],
+        "evidence": [
+          "E3"
+        ],
+        "addresses_gap": false
+      },
+      {
+        "text": "I have not worked inside a formal code review process, and I have no Azure experience. My nearest practice is AltCheck, which runs on pull requests. In my first weeks I would read the team's review standards, ask for feedback on small pull requests and learn the shared pipeline before taking on larger features.",
+        "claims": [
+          "C4"
+        ],
+        "evidence": [
+          "E3"
+        ],
+        "addresses_gap": true
+      },
+      {
+        "text": "Documenting changes for the Columbus and Lyon teams is part of the role, and I am a native French speaker with fluent English, so I can write those notes in either language. If the team is adding FieldLink capacity as more field-service operations move onto the platform, I would welcome a conversation about where you need help first.",
+        "claims": [
+          "C3",
+          "C5",
+          "C6"
+        ],
+        "evidence": [
+          "E7"
+        ],
+        "addresses_gap": false
+      }
+    ],
+    "closing": "Sincerely,",
+    "signature": "Camille Testard"
+  },
+  "interview": [
+    {
+      "question": "How did you test the RouteWise endpoints?",
+      "talking_points": "pytest tests for the API endpoints; schema for stops, drivers and routes; limits: a 3-week pilot with 4 coordinators and survey-based time figures.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "question": "What would you do in your first weeks under a formal approval process?",
+      "talking_points": "No formal approval process so far; AltCheck is the nearest practice; read the team's standards and ask for feedback on small changes first.",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ]
+}
