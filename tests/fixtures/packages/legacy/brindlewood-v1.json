@@ -1,0 +1,662 @@
+{
+  "meta": {
+    "fixture": true,
+    "market": "US",
+    "language": "en",
+    "company": "Brindlewood Freight Labs",
+    "role": "Junior Software Engineer, Routing",
+    "date": "2026-10-08",
+    "research_level": "standard",
+    "warnings": [],
+    "font": "Arial",
+    "margin_in": 0.7
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "official",
+      "url": "https://brindlewood-freight.example/about",
+      "title": "About Brindlewood Freight Labs",
+      "published": "unknown",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S2",
+      "kind": "press-release",
+      "url": "https://brindlewood-freight.example/newsroom/lanes-api-launch",
+      "title": "Brindlewood launches Lanes API for regional carriers",
+      "published": "2026-03-12",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S3",
+      "kind": "engineering-blog",
+      "url": "https://brindlewood-freight.example/engineering/routing-on-python-postgres",
+      "title": "Moving our routing services to Python and PostgreSQL",
+      "published": "2026-05-20",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S4",
+      "kind": "job-posting",
+      "url": "https://brindlewood-freight.example/careers/junior-software-engineer-routing",
+      "title": "Junior Software Engineer, Routing",
+      "published": "2026-09-22",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S7",
+      "kind": "official",
+      "url": "https://brindlewood-freight.example/team",
+      "title": "Our team - Brindlewood Freight Labs",
+      "published": "2026-07-01",
+      "accessed": "2026-10-08",
+      "reachable": true,
+      "retrieved_via": "user-provided snapshot"
+    },
+    {
+      "id": "S5",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/camille-testard-cv.md",
+      "title": "Candidate CV"
+    },
+    {
+      "id": "S6",
+      "kind": "candidate",
+      "url": "tests/fixtures/candidate/projects.md",
+      "title": "Candidate project notes"
+    }
+  ],
+  "company_claims": [
+    {
+      "id": "C1",
+      "status": "confirmed",
+      "text": "Brindlewood builds dispatch and routing software for regional freight carriers in the US Midwest.",
+      "sources": [
+        "S1"
+      ]
+    },
+    {
+      "id": "C2",
+      "status": "confirmed",
+      "text": "Brindlewood launched the Lanes API in March 2026 so carriers' dispatch systems can request optimized multi-stop routes.",
+      "sources": [
+        "S2"
+      ]
+    },
+    {
+      "id": "C3",
+      "status": "confirmed",
+      "text": "Brindlewood's engineering team moved its routing services to Python and FastAPI on PostgreSQL, deployed on Kubernetes.",
+      "sources": [
+        "S3"
+      ]
+    },
+    {
+      "id": "C4",
+      "status": "confirmed",
+      "text": "The Routing role builds and maintains Lanes API endpoints and writes SQL against PostgreSQL route data.",
+      "sources": [
+        "S4"
+      ]
+    },
+    {
+      "id": "C5",
+      "status": "hypothesis",
+      "text": "The team is likely hiring to support Lanes API adoption after the launch.",
+      "sources": [
+        "S2",
+        "S4"
+      ]
+    },
+    {
+      "id": "C6",
+      "status": "confirmed",
+      "text": "Brindlewood Freight Labs was founded in 2023, raised a seed round in January 2026 and is a team of 18, including 7 engineers.",
+      "sources": [
+        "S7"
+      ]
+    },
+    {
+      "id": "C7",
+      "status": "confirmed",
+      "text": "Brindlewood is hiring its first junior engineers this year to grow the Routing team.",
+      "sources": [
+        "S7"
+      ]
+    }
+  ],
+  "company_profile": {
+    "type": "startup",
+    "basis": [
+      "C6"
+    ],
+    "unit": "Routing team",
+    "hiring_triggers": [
+      "C2",
+      "C7",
+      "C5"
+    ],
+    "note": "first junior hires: the risk to reduce is ramp-up time on the routing stack"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "title": "RouteWise",
+      "stage": "used",
+      "dates": "Jan 2026 - Apr 2026",
+      "tools": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "pytest",
+        "Docker"
+      ],
+      "facts": [
+        "Capstone, team of 3; Camille owned the backend API and the route-batching heuristic",
+        "Plans delivery routes for volunteer drivers of the Northbridge Community Pantry",
+        "Designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints",
+        "Wrote pytest tests for the API endpoints",
+        "Used by 4 volunteer coordinators during a 3-week pilot",
+        "Docker used for local development only; never deployed with Kubernetes"
+      ],
+      "metrics": [
+        "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
+      ],
+      "source": "S6#routewise"
+    },
+    {
+      "id": "E2",
+      "title": "ShelfScan",
+      "stage": "prototype",
+      "dates": "Oct 2025 - Dec 2025",
+      "tools": [
+        "Python",
+        "PyTorch",
+        "OpenCV"
+      ],
+      "facts": [
+        "Course project that counts products on shelf photos",
+        "Built image preprocessing with OpenCV and trained a detection model with PyTorch",
+        "Trained and tested on a public shelf-image dataset",
+        "Not used in production; accuracy not formally measured"
+      ],
+      "metrics": [],
+      "source": "S6#shelfscan"
+    },
+    {
+      "id": "E3",
+      "title": "AltCheck",
+      "stage": "used",
+      "dates": "Jun 2025 - Aug 2025",
+      "tools": [
+        "JavaScript",
+        "Node.js",
+        "GitHub Actions",
+        "Git"
+      ],
+      "facts": [
+        "GitHub Action that flags images without alt text in HTML pull requests",
+        "Adopted by 3 student club websites"
+      ],
+      "metrics": [],
+      "source": "S6#altcheck"
+    },
+    {
+      "id": "E4",
+      "title": "IT Support Assistant, Northbridge Public Library",
+      "stage": "experience",
+      "dates": "Sep 2023 - May 2026",
+      "tools": [
+        "Python"
+      ],
+      "facts": [
+        "Resolved device and account issues for library staff and patrons",
+        "Wrote a Python script that automated the weekly public-computer reservation report"
+      ],
+      "metrics": [
+        "Supervisor estimated about 2 hours of staff time saved per week"
+      ],
+      "source": "S5"
+    },
+    {
+      "id": "E5",
+      "title": "Teaching Assistant, Introduction to Databases",
+      "stage": "experience",
+      "dates": "Jan 2025 - May 2025",
+      "tools": [
+        "SQL"
+      ],
+      "facts": [
+        "Held weekly office hours for a class of 40 students",
+        "Graded SQL assignments"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E6",
+      "title": "B.S. Computer Science, Northbridge State University",
+      "stage": "coursework",
+      "dates": "Aug 2022 - May 2026",
+      "tools": [],
+      "facts": [
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision",
+        "Degree awarded May 2026"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E7",
+      "title": "Languages",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "French (native)",
+        "English (fluent)"
+      ],
+      "metrics": [],
+      "source": "S5"
+    },
+    {
+      "id": "E8",
+      "title": "Availability",
+      "stage": "self-reported",
+      "tools": [],
+      "facts": [
+        "Available to start in January 2027",
+        "Open to relocating to Lyon, France"
+      ],
+      "metrics": [],
+      "source": "S5"
+    }
+  ],
+  "job": {
+    "source": "S4",
+    "posting_status": "open",
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "Python",
+        "level": "required",
+        "match": [
+          "E1",
+          "E4"
+        ]
+      },
+      {
+        "id": "R2",
+        "text": "SQL",
+        "level": "required",
+        "match": [
+          "E1",
+          "E5"
+        ]
+      },
+      {
+        "id": "R3",
+        "text": "REST APIs",
+        "level": "required",
+        "match": [
+          "E1"
+        ]
+      },
+      {
+        "id": "R4",
+        "text": "Git",
+        "level": "required",
+        "match": [
+          "E3"
+        ]
+      },
+      {
+        "id": "R5",
+        "text": "Experience deploying services on Kubernetes",
+        "level": "required",
+        "match": [],
+        "gap_terms": [
+          "Kubernetes",
+          "k8s"
+        ]
+      },
+      {
+        "id": "R6",
+        "text": "Go",
+        "level": "preferred",
+        "match": [],
+        "gap_terms": [
+          "Go",
+          "Golang"
+        ]
+      },
+      {
+        "id": "R7",
+        "text": "Geospatial data",
+        "level": "preferred",
+        "match": [
+          "E1"
+        ],
+        "note": "partial: route batching by stop location, no GIS tooling"
+      }
+    ]
+  },
+  "strategy": {
+    "value_proposition": "Junior backend developer who already built a FastAPI and PostgreSQL route-planning service used in a real pilot: the same stack and problem space as the Lanes API.",
+    "arguments": [
+      {
+        "need": "C2, C4, R1-R3",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "high",
+        "placement": "both"
+      },
+      {
+        "need": "R2 (SQL)",
+        "evidence": [
+          "E5",
+          "E4"
+        ],
+        "confidence": "medium",
+        "placement": "both"
+      },
+      {
+        "need": "R5 gap (Kubernetes)",
+        "evidence": [
+          "E1"
+        ],
+        "confidence": "low",
+        "placement": "letter"
+      }
+    ],
+    "differentiation": "Brindlewood: lead with RouteWise (routing domain, identical stack); ShelfScan left out. Halvane: lead with ShelfScan and AltCheck.",
+    "gaps": [
+      "Kubernetes: none (Docker for local development only)",
+      "Go: none"
+    ],
+    "adaptation": [
+      {
+        "lever": "positioning",
+        "choice": "Backend developer who already built a FastAPI and PostgreSQL route-planning service: the stack and problem of the Lanes API",
+        "basis": [
+          "C2",
+          "C3",
+          "R1",
+          "R2",
+          "R3"
+        ]
+      },
+      {
+        "lever": "projects",
+        "choice": "RouteWise first with routing-heuristic and REST bullets; AltCheck kept short; ShelfScan left out",
+        "basis": [
+          "C2",
+          "C4",
+          "R7"
+        ]
+      },
+      {
+        "lever": "experience",
+        "choice": "IT support framed as Python automation, teaching assistant as SQL practice",
+        "basis": [
+          "R1",
+          "R2"
+        ]
+      },
+      {
+        "lever": "keywords",
+        "choice": "Python, SQL, REST APIs, FastAPI, PostgreSQL in the posting's and blog's words; Kubernetes and Go stay declared gaps",
+        "basis": [
+          "R1",
+          "R2",
+          "R3",
+          "C3",
+          "R5",
+          "R6"
+        ]
+      },
+      {
+        "lever": "letter",
+        "choice": "Open on the Lanes API launch; first junior hires make ramp-up the risk, answered with same-stack evidence; hedged closing on adoption",
+        "basis": [
+          "C2",
+          "C7",
+          "C3",
+          "C5"
+        ]
+      },
+      {
+        "lever": "register",
+        "choice": "Direct and technical, like the engineering blog",
+        "basis": [
+          "C3"
+        ]
+      }
+    ]
+  },
+  "cv": {
+    "name": "Camille Testard",
+    "contact": [
+      "Columbus, OH",
+      "+1 555 0142",
+      "camille.testard@example.com",
+      "portfolio.camille-testard.example"
+    ],
+    "headline": "Junior backend developer | Python, FastAPI, PostgreSQL, SQL",
+    "sections": [
+      {
+        "title": "Education",
+        "items": [
+          {
+            "heading": "Northbridge State University",
+            "subheading": "B.S. Computer Science",
+            "location": "Columbus, OH",
+            "dates": "Aug 2022 - May 2026",
+            "bullets": [
+              {
+                "text": "Relevant coursework: Data Structures, Databases, Software Engineering",
+                "evidence": [
+                  "E6"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Projects",
+        "items": [
+          {
+            "heading": "RouteWise - delivery route planner (capstone, team of 3)",
+            "subheading": "Python, FastAPI, PostgreSQL, pytest",
+            "dates": "Jan 2026 - Apr 2026",
+            "bullets": [
+              {
+                "text": "Built the backend API and the route-batching heuristic for a web app that plans delivery routes for volunteer drivers of the Northbridge Community Pantry",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Designed the PostgreSQL schema for stops, drivers and routes, exposed it through REST endpoints and covered them with pytest tests",
+                "evidence": [
+                  "E1"
+                ]
+              },
+              {
+                "text": "Piloted with 4 volunteer coordinators for 3 weeks; they reported planning time per shift falling from about 25 to about 10 minutes",
+                "evidence": [
+                  "E1"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "AltCheck - accessibility check for pull requests",
+            "subheading": "JavaScript, Node.js, GitHub Actions",
+            "dates": "Jun 2025 - Aug 2025",
+            "bullets": [
+              {
+                "text": "Wrote a GitHub Action that flags images without alt text in HTML pull requests; adopted by 3 student club websites",
+                "evidence": [
+                  "E3"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Experience",
+        "items": [
+          {
+            "heading": "IT Support Assistant (part-time)",
+            "subheading": "Northbridge Public Library",
+            "location": "Columbus, OH",
+            "dates": "Sep 2023 - May 2026",
+            "bullets": [
+              {
+                "text": "Automated the weekly public-computer reservation report with a Python script; supervisor estimated about 2 hours of staff time saved per week",
+                "evidence": [
+                  "E4"
+                ]
+              },
+              {
+                "text": "Resolved device and account issues for library staff and patrons",
+                "evidence": [
+                  "E4"
+                ]
+              }
+            ]
+          },
+          {
+            "heading": "Teaching Assistant, Introduction to Databases",
+            "subheading": "Northbridge State University",
+            "dates": "Jan 2025 - May 2025",
+            "bullets": [
+              {
+                "text": "Held weekly office hours for a class of 40 students and graded SQL assignments",
+                "evidence": [
+                  "E5"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Skills",
+        "items": [
+          {
+            "label": "Languages and frameworks",
+            "text": "Python, SQL, JavaScript, FastAPI, Node.js",
+            "evidence": [
+              "E1",
+              "E3",
+              "E5"
+            ]
+          },
+          {
+            "label": "Data and tools",
+            "text": "PostgreSQL, pytest, Git, GitHub Actions, Docker (local development)",
+            "evidence": [
+              "E1",
+              "E3"
+            ]
+          },
+          {
+            "label": "Spoken languages",
+            "text": "French (native), English (fluent)",
+            "evidence": [
+              "E7"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "letter": {
+    "date": "October 8, 2026",
+    "recipient": [
+      "Routing Hiring Team",
+      "Brindlewood Freight Labs",
+      "Indianapolis, IN"
+    ],
+    "subject": "Application: Junior Software Engineer, Routing",
+    "salutation": "Dear Brindlewood Hiring Team,",
+    "paragraphs": [
+      {
+        "text": "I am applying for the Junior Software Engineer role on the Routing team at Brindlewood Freight Labs. Since the Lanes API launched in March 2026, carriers' dispatch systems can request multi-stop routes from Brindlewood, and the posting describes building and maintaining those endpoints. Route planning is the problem I chose for my capstone, and I would like to keep working on it with a team that runs routing in production.",
+        "claims": [
+          "C2",
+          "C4"
+        ],
+        "evidence": [
+          "E1"
+        ]
+      },
+      {
+        "text": "My strongest evidence is RouteWise, a route planner I built with two classmates for the volunteer drivers of the Northbridge Community Pantry. I owned the backend: a FastAPI service over a PostgreSQL schema for stops, drivers and routes, the heuristic that batches stops into routes, and the pytest tests for its endpoints. During a three-week pilot, four coordinators used it and reported that planning a shift took about 10 minutes instead of about 25. Your engineering blog describes routing services built with Python and FastAPI on PostgreSQL. If I join as one of your first junior engineers, I would start in a stack I have already used end to end.",
+        "claims": [
+          "C3",
+          "C7"
+        ],
+        "evidence": [
+          "E1"
+        ]
+      },
+      {
+        "text": "SQL is also familiar ground. As a teaching assistant for Introduction to Databases, I held weekly office hours and graded SQL assignments, and at the Northbridge Public Library I automated a weekly reservation report with a Python script.",
+        "claims": [],
+        "evidence": [
+          "E5",
+          "E4"
+        ]
+      },
+      {
+        "text": "I want to be direct about one gap: I have not deployed services on Kubernetes. I have used Docker only for local development on RouteWise, so learning your deployment workflow would be one of my first goals, with code review from the team.",
+        "claims": [],
+        "evidence": [
+          "E1"
+        ],
+        "addresses_gap": true
+      },
+      {
+        "text": "If the Routing team is now focused on helping more carriers adopt the Lanes API, I could contribute tested endpoints from my first weeks. I would welcome a conversation about the team's priorities.",
+        "claims": [
+          "C5"
+        ],
+        "evidence": [
+          "E1"
+        ]
+      }
+    ],
+    "closing": "Sincerely,",
+    "signature": "Camille Testard"
+  },
+  "interview": [
+    {
+      "question": "Walk us through the RouteWise batching heuristic.",
+      "talking_points": "Problem, constraints, how stops are grouped, what the pilot showed, what I would change.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "question": "You have not used Kubernetes. How would you ramp up?",
+      "talking_points": "Honest gap; Docker locally; plan to learn the team's deployment workflow with code review.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ]
+}

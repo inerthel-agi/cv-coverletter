@@ -5,6 +5,7 @@
 2. Reliable press and trade media (dated, named outlet).
 3. Public professional profiles (LinkedIn company page) if accessible without login.
 4. User-provided copies (pasted posting, saved page): usable, labelled `user-provided`, not re-verified live.
+   Record the local file as `copy_path` so excerpts can be checked offline.
 Aggregators, AI summaries, review sites and forums: leads only, never sole support for a `confirmed` claim.
 
 ## Every company claim

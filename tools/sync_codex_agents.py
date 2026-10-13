@@ -33,8 +33,11 @@ def render(md_path):
 
 def main():
     check = "--check" in sys.argv
-    os.makedirs(DST, exist_ok=True)
+    if not check:
+        os.makedirs(DST, exist_ok=True)
     stale = []
+    expected = {f[:-3] + ".toml" for f in os.listdir(SRC) if f.endswith(".md")}
+    orphans = sorted(f for f in os.listdir(DST) if f.endswith(".toml") and f not in expected) if os.path.isdir(DST) else []
     for f in sorted(os.listdir(SRC)):
         if not f.endswith(".md"):
             continue
@@ -47,7 +50,9 @@ def main():
                 with open(out, "w", encoding="utf-8") as fh:
                     fh.write(data)
     print(("stale: %s" if check else "written: %s") % [os.path.relpath(p, ROOT) for p in stale])
-    return 1 if check and stale else 0
+    if orphans:
+        print("orphan agents (not deleted): %s" % orphans)
+    return 1 if orphans or (check and stale) else 0
 
 
 if __name__ == "__main__":

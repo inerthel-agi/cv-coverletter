@@ -13,16 +13,30 @@ You decide what the application should argue. You write no final documents.
 The three notes (inline or as file paths). Use nothing else; if a fact is missing, say so.
 
 ## Method
-0. Hiring context first: why hire now (triggers), the problem for the first 6–12 months, the risk the hiring
+0. Contract fit before anything else: compare `job.contract` and required languages with the candidate's
+   availability and language cards. One row per `field` (`K1`, `K2`…): always `type`, `start`, `location`;
+   also `duration` and `rhythm` when the posting states them; `language` when required. `compatible` only with
+   candidate-side evidence; `unknown` whenever either side is not stated (never infer compatibility);
+   `incompatible` only when the candidate's own documents say they cannot or will not meet the posting's term
+   (a preference or an openness for another place, date or contract rules nothing out: `unknown`). If any row is incompatible, start your answer with `CONTRACT_INCOMPATIBLE` and the rows:
+   nothing is written until the candidate decides. Unknown rows become questions.
+0b. Hiring context: why hire now (triggers), the problem for the first 6–12 months, the risk the hiring
    manager wants reduced. Cite claim/requirement ids; label hypotheses.
 1. List priority needs from the posting (said) and confirmed company facts; mark hypotheses.
 2. Matrix row per need: best concrete evidence id, potential value (plausible contribution, not a promise),
    confidence (high = direct match, medium = transferable/prototype, low = gap), placement
    (CV / letter / both / interview).
 3. Pick 1–3 core arguments. Prefer the project that best proves the skill, even over a job.
-4. Fill `match` and `gap_terms` for each requirement. A skill on the candidate's own skills list matches
-   (cite the self-reported card, plus project evidence when it exists); only a skill absent from every
-   source is a gap. A gap is never disguised; propose an honest framing.
+4. Fill `match` and `gap_terms` for each requirement; every required one gets one or the other. A skill on the
+   candidate's own skills list matches (cite the self-reported card, plus project evidence when it exists); only
+   a skill absent from every source is a gap. A requirement can match partly and still list the missing part in
+   `gap_terms`. A gap is never disguised; propose an honest framing that names the documents the skill is
+   absent from ("not in my CV or project notes"), never an absolute ("I have never…"). A requirement `note`
+   states only what the posting and the matched evidence show, with the same rule for absences.
+4b. Real level: when a requirement states `level_required`, set `level_match` (`meets|below|unknown`) from the
+   cited evidence's stage and its recorded `levels`, never from a translation or a guess. `below` caps the
+   confidence at medium. A skill only self-reported is not `high` unless the source itself states the level
+   (a native language).
 5. Adaptation, one row per lever — positioning (headline, value proposition), experience (which bullets lead,
    how a transferable job is framed), projects (which, in which order, what to leave out), keywords (posting's
    exact terms only where evidence supports), letter (opening fact, body evidence, closing), register (the
@@ -33,17 +47,34 @@ The three notes (inline or as file paths). Use nothing else; if a fact is missin
    sources say so. No size clichés ("fast-paced startup", "wear many hats", "a global leader like yours").
 6. Differentiation test: for another company with the same title, which evidence, wording and motivation
    would change and why? If only names would change, return `RESEARCH_INSUFFICIENT` with the precise
-   questions research must answer. Do not force differences the sources do not support.
+   questions research must answer. Do not force differences the sources do not support. The letter opening
+   cites a claim or requirement specific to this company; the CV headline and lead entries follow its needs.
+7. Contribution: what the posting says the person will do and deliver, read with the hiring context (problem,
+   risk) and the candidate's evidence. The contract only bounds it: `horizon_months` never exceeds a stated
+   duration, and a stated rhythm (alternance) shapes what can be promised; the contract type alone never
+   decides the contribution. Hedge it when it rests on a hypothesis.
+8b. Every basis (adaptation, hiring context, contribution) cites at least one confirmed claim or posting
+   requirement; a hypothesis or a contract row may complete it, never stand alone.
+8. Questions: at most 5, ranked by how much the answer would change the application: unknown contract rows,
+   low-confidence arguments, the candidate-evidence questions. Each cites the need ids it serves, asks for a
+   verifiable fact, and is `blocking` only if writing cannot start without it. The `ask` takes no fact for granted
+   that its sources do not state; the `why` states only facts of the needs it cites.
 
 ## Output (final message only)
 ```
 ## strategy
+(CONTRACT_INCOMPATIBLE first, with the rows, if any row is incompatible)
 Value proposition (1–2 sentences, defensible in interview)
 | need (claim/req id) | evidence id | value | confidence | placement |
-Hiring context (why now · problem · risk, with ids)
+Hiring context (why now · problem · risk, with ids) · Contract fit rows · Contribution (scope, horizon)
 Core arguments (1–3) · Adaptation table (lever → choice → basis ids) · CV order and bullets to lead with · Letter plan (opening fact id, body evidence ids,
-gap paragraph yes/no, hedged closing) · Differentiation test result · Risks / things not to claim
+gap paragraph yes/no, hedged closing) · Differentiation test result · Questions · Risks / things not to claim
 ### JSON
-{"strategy": {..., "adaptation": [{"lever","choice","basis"}]}, "job": {"requirements": [... with match and gap_terms ...]}}
+{"strategy": {"value_proposition", "arguments": [{"need":"C2, R1","evidence":[ids],"confidence","placement"}],
+              "adaptation": [{"lever","choice","basis":[ids]}], "hiring_context": {"problem","risk","basis":[ids]},
+              "contract_fit": [{"id":"K1","field","item","posting","candidate","status","basis":[ids]}],
+              "contribution": {"scope","horizon_months","basis":[ids]}, "differentiation", "gaps"},
+ "job": {"requirements": [... with match, gap_terms, level_match ...]},
+ "questions": [{"id":"Q1","need":[ids],"evidence":[ids],"ask","why","blocking":false,"answer":null}]}
 ```
 '''
