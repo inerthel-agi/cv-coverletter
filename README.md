@@ -113,9 +113,9 @@ found in review (partly matched gaps, unchecked CV dates and degrees, evidence n
 candidate's files, open postings without a reachable source, interview points, named recipients, PDF character
 loss, stale documents, e2e runs reusing earlier outputs), the employment contract, levels, questions,
 differentiation, auditor verdicts, and an older package (`tests/fixtures/packages/legacy/`) that must still pass.
-`tests/test_review_regressions.py` (run by `run_tests.py`) adds 30 offline regression cases: dossier coverage, partial
-PDFs, conflicting verdicts, Windows input formats, agent retirement, empty CV sections, interview questions and levels,
-CV target names, gaps and differentiation, letter dates and ISO date-times, generation settings and e2e audit rounds.
+`tests/test_review_regressions.py` (run by `run_tests.py`) adds 31 offline regression cases: dossier coverage, partial
+PDFs, verdict conflicts, Windows inputs, agent retirement, empty CV sections, interview questions and levels, CV target
+names, duplicate requirement ids, gaps and differentiation, letter dates and ISO date-times, generation settings, e2e audit rounds.
 
 ```bash
 python3 tests/e2e/run_e2e.py --model haiku

@@ -391,10 +391,11 @@ class Audit:
         self.ev = {e["id"]: e for e in p["evidence"]}
         self.reqs = {r.get("id"): r for r in (p.get("job") or {}).get("requirements", [])}
         self.fit = {k.get("id"): k for k in (p.get("strategy") or {}).get("contract_fit") or []}
-        for coll, name in ((p["sources"], "source"), (p["company_claims"], "claim"), (p["evidence"], "evidence")):
+        for coll, name in ((p["sources"], "source"), (p["company_claims"], "claim"), (p["evidence"], "evidence"),
+                           ((p.get("job") or {}).get("requirements") or [], "requirement")):  # targets are named by id
             ids = [x.get("id") for x in coll]
             if len(ids) != len(set(ids)):
-                self.err("E_STRUCTURE", "duplicate %s ids" % name)
+                self.err("E_STRUCTURE", "duplicate %s ids: %s" % (name, sorted({str(i) for i in ids if ids.count(i) > 1})))
         for e in p["evidence"]:
             for k in ("facts", "metrics", "excerpts", "tools"):
                 v = e.get(k) or []  # a string would pass as a list of one-character strings
