@@ -122,8 +122,9 @@ package or a test fixture.
 ## Contract rules: errors for `meta.schema: 2`, warnings (`W_…`) for older packages
 - `meta.schema`, when present, is the integer `1` or `2`; strings, booleans and other versions are errors,
   never an implicit downgrade. Objects, text, numbers and id lists have the documented types; malformed input
-  gets a located `E_STRUCTURE`. `cv.name` is non-empty text. Source, claim, evidence and requirement ids are
-  unique (a requirement target is named by its id). Durations/horizons are positive numbers or null;
+  gets a located `E_STRUCTURE`. `cv.name` is non-empty text. Source, claim, evidence, requirement and contract-fit
+  ids are unique (requirement targets are named by id; questions and arguments cite contract rows by id).
+  Durations/horizons are positive numbers or null;
 - `meta.mode` and `meta.language` stated (language also in `create`); keys required by the mode (`create`: cv + evidence; `tailor`: + sources,
   claims, job, strategy; `cover-letter` and `package`: + letter);
 - evidence read from a local file has `excerpts`; a language level or CEFR in the documents or the interview

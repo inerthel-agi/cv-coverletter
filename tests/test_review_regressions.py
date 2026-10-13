@@ -1,6 +1,6 @@
 """Offline regressions: the eighteen findings of the read-only review (tests 1-18), the six defects of the final
-pre-commit review (tests 19-24), the five defects left after it (tests 25-30), then duplicate requirement ids (test
-31). Each test failed on the code before its fix."""
+pre-commit review (tests 19-24), the five defects left after it (tests 25-30), then duplicate requirement and
+contract-fit ids (tests 31-32). Each test failed on the code before its fix."""
 import copy
 import gc
 import json
@@ -697,6 +697,16 @@ class ReviewRegressionTests(unittest.TestCase):
         au = self.audit(p)
         self.assertTrue(self.located(au, "E_STRUCTURE", "duplicate requirement ids: ['R1']"), au.errors)
         self.assertEqual(self.audit(self.package()).errors, [])
+
+    def test_32_duplicate_contract_fit_ids_are_refused(self):
+        p = self.package()  # questions and arguments cite rows by id: a second K1 would take the first one's place
+        p["strategy"]["contract_fit"].append(dict(p["strategy"]["contract_fit"][0], item="employment type, again"))
+        self.assertEqual(p["strategy"]["contract_fit"][-1]["id"], "K1")
+        au = self.audit(p)
+        self.assertTrue(self.located(au, "E_STRUCTURE", "duplicate contract-fit ids: ['K1']"), au.errors)
+        for name in ("halvane", "orvanta", "quarrelane", "tamberlin"):
+            with self.subTest(package=name):
+                self.assertEqual(self.audit(self.package_named(name)).errors, [])
 
 
 if __name__ == "__main__":
