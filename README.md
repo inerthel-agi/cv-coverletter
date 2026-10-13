@@ -1,4 +1,4 @@
-# cv-ats-us — company-first job applications for Claude Code
+# cv-ats-us
 
 ![cv-coverletter](assets/readme-banner.png)
 
