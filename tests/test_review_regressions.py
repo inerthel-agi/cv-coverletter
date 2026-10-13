@@ -1,6 +1,6 @@
 """Offline regressions: the eighteen findings of the read-only review (tests 1-18), the six defects of the final
-pre-commit review (tests 19-24), then the five defects left after it (tests 25-30). Each test failed on the code
-before its fix."""
+pre-commit review (tests 19-24), the five defects left after it (tests 25-30), then duplicate requirement ids (test
+31). Each test failed on the code before its fix."""
 import copy
 import gc
 import json
@@ -689,6 +689,14 @@ class ReviewRegressionTests(unittest.TestCase):
             gc.collect()
         self.assertIn("2026", numbers)  # the helper still reads the fixture files
         self.assertEqual([str(w.message) for w in caught if issubclass(w.category, ResourceWarning)], [])
+
+    def test_31_duplicate_requirement_ids_are_refused(self):
+        p = self.package()  # a second R1 would hide this invented requirement and its note from every target
+        p["job"]["requirements"].insert(0, {"id": "R1", "text": "Holds a PhD in distributed systems",
+                                            "level": "required", "match": ["E1"], "note": "met: PhD awarded 2024"})
+        au = self.audit(p)
+        self.assertTrue(self.located(au, "E_STRUCTURE", "duplicate requirement ids: ['R1']"), au.errors)
+        self.assertEqual(self.audit(self.package()).errors, [])
 
 
 if __name__ == "__main__":
