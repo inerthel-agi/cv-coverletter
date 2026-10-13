@@ -1,7 +1,10 @@
 # Candidate evidence
 
 ## Evidence card
-`{id, title, stage, dates, tools[], facts[], metrics[], source}`
+`{id, title, stage, dates, tools[], facts[], metrics[], excerpts[], levels[], source}`
+- `excerpts`: the source's own words, copied verbatim (≤ 30 words each), covering every number, year and level
+  of the card. The audit finds each excerpt in the file; it does not judge whether a fact restates it fairly.
+- `levels`: `{subject, level}` only when the source states the level, in the source's words.
 - `facts`: what the candidate personally did, in their own documents' terms. Team work → state the
   team size and the candidate's part.
 - `tools`: only tools actually used in this item (not "familiar with").
@@ -26,10 +29,11 @@
 - Without metric (never invent one): "Built OpenCV preprocessing and trained a PyTorch model that counts
   products on shelf photos (course prototype, public dataset)." Stage and scope replace the missing number.
 - Transferable experience is valid when it proves a relevant skill (support job → reliability, automation).
-- Unmeasured figure: attribute it once, in plain words, inside the sentence: "coordinators said in a survey
-  that…", "my supervisor estimated…" / "selon les coordinateurs", "selon l'estimation de la responsable".
-  No parenthetical disclaimers ("(self-reported; no other measurement)", "(déclaratif)", "(non mesuré)") and no
-  "it is their own estimate and the only measurement" sentences: the audit rejects them.
+- Unmeasured figure (estimate, survey): keep it attributed to who produced it, in the sentence or in
+  brackets: "coordinators said in a survey that…", "my supervisor estimated…", "(estimated by my supervisor)" /
+  "selon les coordinateurs", "(estimation de la responsable)". Stated bare, it reads as a measurement and the
+  audit rejects it (`E_ESTIMATE_AS_MEASURE`). No self-deprecating disclaimers ("(self-reported; no other
+  measurement)", "(déclaratif)", "(non mesuré)", "it is their own estimate and the only measurement").
 - One fact per claim: never move a number or scope from one fact to another (office hours for a class of 40
   + graded SQL ≠ "graded SQL for 40 students").
 - No negative-only bullets ("the app was not deployed"): scope positive bullets instead ("course prototype",
@@ -47,6 +51,9 @@ card and, when possible, a project that used it. A required skill with no eviden
 The letter may address it honestly in one paragraph flagged `addresses_gap: true`
 (what is missing, nearest real evidence, concrete ramp-up).
 
-## Questions to ask (only if blocking)
-Dates, personal role in team projects, whether something was deployed or used and by whom,
-origin of a number, language level, availability / alternance rhythm (FR).
+## Targeted questions (`questions` in package.json)
+At most 5, ranked by how much the answer would change the application, each tied to the need ids it serves:
+dates, personal role in team projects, whether something was deployed or used and by whom, origin of a number,
+language level, availability, contract sought, alternance rhythm (FR). Ask for a verifiable fact (link,
+document, date, who measured), never for an estimate. Blocking questions are asked before writing; the others
+go to the dossier.

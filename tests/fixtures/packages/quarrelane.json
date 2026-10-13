@@ -1,5 +1,7 @@
 {
   "meta": {
+    "schema": 2,
+    "mode": "package",
     "fixture": true,
     "market": "FR",
     "language": "fr",
@@ -12,6 +14,10 @@
     "warnings": [
       "Offre en ligne inaccessible (https://careers.quarrelane-fixture.invalid/jobs/4471, échec le 2026-10-08) : analyse fondée sur la copie collée par le candidat, non datée. Vérifier que l'offre est toujours ouverte.",
       "Recherche entreprise limitée : un seul fait confirmé ; personnalisation prudente."
+    ],
+    "language_basis": [
+      "R4",
+      "C1"
     ]
   },
   "sources": [
@@ -41,7 +47,8 @@
       "published": "unknown",
       "accessed": "2026-10-08",
       "reachable": true,
-      "retrieved_via": "user-provided snapshot"
+      "retrieved_via": "user-provided snapshot",
+      "copy_path": "tests/fixtures/companies/quarrelane-analytics/careers-snippet.md"
     },
     {
       "id": "S5",
@@ -113,7 +120,17 @@
       "metrics": [
         "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
       ],
-      "source": "S6#routewise"
+      "source": "S6#routewise",
+      "excerpts": [
+        "Dates: Jan 2026 – Apr 2026. Capstone, team of 3. Status: used in a pilot.",
+        "volunteer coordinators of the Northbridge Community Pantry planned delivery routes for volunteer drivers by hand",
+        "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes.",
+        "I designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints.",
+        "I wrote pytest tests for the API endpoints.",
+        "Docker: used for local development only; the app was never deployed with Kubernetes.",
+        "used by 4 volunteer coordinators during a 3-week pilot",
+        "In a survey of the 4 coordinators, they reported that planning time per shift fell from about 25 minutes to about 10 minutes."
+      ]
     },
     {
       "id": "E2",
@@ -132,7 +149,14 @@
         "Not used in production; accuracy not formally measured"
       ],
       "metrics": [],
-      "source": "S6#shelfscan"
+      "source": "S6#shelfscan",
+      "excerpts": [
+        "Dates: Oct 2025 – Dec 2025. Computer Vision course project. Status: prototype.",
+        "a tool that counts products on shelf photos",
+        "I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+        "trained and tested on a public shelf-image dataset",
+        "not used in production; accuracy not formally measured"
+      ]
     },
     {
       "id": "E3",
@@ -150,7 +174,12 @@
         "Adopted by 3 student club websites"
       ],
       "metrics": [],
-      "source": "S6#altcheck"
+      "source": "S6#altcheck",
+      "excerpts": [
+        "Dates: Jun 2025 – Aug 2025. Personal project. Status: used.",
+        "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests",
+        "adopted by 3 student club websites"
+      ]
     },
     {
       "id": "E4",
@@ -167,7 +196,13 @@
       "metrics": [
         "Supervisor estimated about 2 hours of staff time saved per week"
       ],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "IT Support Assistant (part-time) — Northbridge Public Library, Columbus, OH — Sep 2023 – May 2026",
+        "Resolved device and account issues for library staff and patrons.",
+        "Wrote a Python script that automated the weekly public-computer reservation report",
+        "My supervisor estimated it saved about 2 hours of staff time per week."
+      ]
     },
     {
       "id": "E5",
@@ -182,7 +217,12 @@
         "Graded SQL assignments"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Teaching Assistant, Introduction to Databases — Northbridge State University — Jan 2025 – May 2025",
+        "Held weekly office hours for a class of 40 students.",
+        "Graded SQL assignments."
+      ]
     },
     {
       "id": "E6",
@@ -195,7 +235,11 @@
         "Degree awarded May 2026"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Northbridge State University, Columbus, OH — B.S. Computer Science, Aug 2022 – May 2026 (degree awarded May 2026)",
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision"
+      ]
     },
     {
       "id": "E7",
@@ -207,7 +251,20 @@
         "English (fluent)"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "French (native), English (fluent)."
+      ],
+      "levels": [
+        {
+          "subject": "French",
+          "level": "native"
+        },
+        {
+          "subject": "English",
+          "level": "fluent"
+        }
+      ]
     },
     {
       "id": "E8",
@@ -216,10 +273,15 @@
       "tools": [],
       "facts": [
         "Available to start in January 2027",
-        "Open to relocating to Lyon, France"
+        "Open to relocating to Lyon, France",
+        "Based in Columbus, OH"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Available to start in January 2027. Open to relocating to Lyon, France.",
+        "Columbus, OH | +1 555 0142"
+      ]
     }
   ],
   "job": {
@@ -259,9 +321,21 @@
         "level": "required",
         "match": [
           "E7"
-        ]
+        ],
+        "level_required": "fluent",
+        "level_match": "meets"
       }
-    ]
+    ],
+    "language": "en",
+    "contract": {
+      "type": "cdi",
+      "duration_months": null,
+      "rhythm": null,
+      "start": null,
+      "location": "Lyon",
+      "remote": null,
+      "source": "S2"
+    }
   },
   "strategy": {
     "value_proposition": "Développeur Python junior qui a déjà conçu un service FastAPI/PostgreSQL utilisé en pilote et automatisé un rapport de données récurrent.",
@@ -346,7 +420,74 @@
           "R4"
         ]
       }
-    ]
+    ],
+    "contract_fit": [
+      {
+        "id": "K1",
+        "field": "type",
+        "item": "type de contrat",
+        "posting": "CDI",
+        "candidate": "non précisé dans les documents",
+        "status": "unknown",
+        "basis": [
+          "S2"
+        ]
+      },
+      {
+        "id": "K2",
+        "field": "start",
+        "item": "date de début",
+        "posting": "non précisée",
+        "candidate": "disponible à partir de janvier 2027",
+        "status": "unknown",
+        "basis": [
+          "S2",
+          "E8"
+        ]
+      },
+      {
+        "id": "K3",
+        "field": "location",
+        "item": "lieu",
+        "posting": "Lyon",
+        "candidate": "prêt à s'installer à Lyon",
+        "status": "compatible",
+        "basis": [
+          "S2",
+          "E8"
+        ]
+      },
+      {
+        "id": "K4",
+        "field": "language",
+        "item": "langue",
+        "posting": "français courant",
+        "candidate": "français langue maternelle",
+        "status": "compatible",
+        "basis": [
+          "R4",
+          "E7"
+        ]
+      }
+    ],
+    "hiring_context": {
+      "problem": "D'après la copie de l'offre, fiabiliser les imports de données clients qui alimentent les tableaux de bord",
+      "risk": "Des erreurs dans les pipelines d'import et les requêtes SQL",
+      "basis": [
+        "C2",
+        "R1",
+        "R2"
+      ]
+    },
+    "contribution": {
+      "scope": "Scripts d'import Python et requêtes SQL testés, si le poste porte bien sur les imports",
+      "horizon_months": null,
+      "basis": [
+        "C2",
+        "R1",
+        "R2"
+      ]
+    }
   },
   "cv": {
     "name": "Camille Testard",
@@ -535,7 +676,8 @@
           "E6",
           "E7",
           "E8"
-        ]
+        ],
+        "contribution": true
       }
     ],
     "closing": "Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.",
@@ -548,6 +690,48 @@
       "evidence": [
         "E1"
       ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "need": [
+        "R3"
+      ],
+      "evidence": [
+        "E1"
+      ],
+      "blocking": false,
+      "answer": null,
+      "ask": "Avez-vous déjà utilisé pandas (cours, projet, script) ? Un dépôt ou un notebook permettrait de le citer.",
+      "why": "R3 (pandas) est une exigence non couverte."
+    },
+    {
+      "id": "Q2",
+      "need": [
+        "C2"
+      ],
+      "evidence": [
+        "E4"
+      ],
+      "blocking": false,
+      "answer": null,
+      "ask": "Savez-vous comment Quarrelane reçoit les données de ses clients (échange, salon, ancien salarié) ?",
+      "why": "C2 n'est qu'une hypothèse tirée de la copie de l'offre."
+    },
+    {
+      "id": "Q3",
+      "need": [
+        "K1",
+        "K2"
+      ],
+      "evidence": [
+        "E8"
+      ],
+      "blocking": false,
+      "answer": null,
+      "ask": "Cherchez-vous un CDI, et à partir de quelle date pouvez-vous commencer ?",
+      "why": "Vos documents indiquent janvier 2027 ; l'offre ne donne pas de date."
     }
   ]
 }

@@ -6,11 +6,16 @@ text boxes, headers/footers or hidden text. Format: references/package-format.md
 
 Usage:
   python3 build_docs.py PACKAGE.json --out DIR [--only cv|letter] [--no-pdf]
-Prints a JSON summary of the files written.
+Prints a JSON summary of the files written and records them in DIR/build.json (package and file hashes), so
+check_docs.py can prove the documents come from this exact package. The PDF uses the standard Helvetica font
+(WinAnsi): text outside it is never replaced by '?'; the PDF is refused (pdf_error, exit code 1) and the DOCX
+must be exported to PDF with Word or LibreOffice.
 """
 import argparse
 import datetime
+import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -52,6 +57,52 @@ def clean(s):
     """Normalise text: strip control chars, substitute glyphs missing from WinAnsi."""
     s = "".join(_SUBST.get(c, c) for c in str(s))
     return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", s)
+
+
+def pdf_unencodable(blocks):
+    """Characters the built-in PDF font (WinAnsi / cp1252) cannot show: they would print as '?'."""
+    bad = set()
+    for b in blocks:
+        for t in [t for t, _ in b["runs"]] + [b["right"] or ""]:
+            for c in t:
+                try:
+                    c.encode("cp1252")
+                except UnicodeEncodeError:
+                    bad.add(c)
+    return sorted(bad)
+
+
+MANIFEST = "build.json"
+
+
+def package_hash(pkg):
+    """Hash of the package content (not of its file bytes or dates): same data, same hash."""
+    data = json.dumps(pkg, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
+def file_hash(path):
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def write_manifest(out_dir, pkg, written):
+    """Record which files this package produced; a rebuild of the same package adds to the record."""
+    path, h, files = os.path.join(out_dir, MANIFEST), package_hash(pkg), {}
+    try:
+        with open(path, encoding="utf-8-sig") as f:
+            old = json.load(f)
+        if old.get("package_sha256") == h:
+            files = old.get("files", {})
+    except (OSError, ValueError):
+        pass
+    for rec in written:
+        for k in ("docx", "pdf"):
+            if rec.get(k):
+                files[os.path.basename(rec[k])] = file_hash(rec[k])
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"package_sha256": h, "files": files}, f, indent=2, ensure_ascii=False)
+    return path
 
 
 def char_w(ch, bold):
@@ -348,7 +399,7 @@ class Pdf:
         objs[pages_n - 1] = ("<< /Type /Pages /Kids [%s] /Count %d >>"
                              % (" ".join("%d 0 R" % k for k in kids), len(kids))).encode()
         cat = add(b"<< /Type /Catalog /Pages %d 0 R >>" % pages_n)
-        stamp = datetime.datetime.utcnow().strftime("%Y%m%d%H%M%SZ")
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%SZ")
         info = add(("<< /Title %s /Producer (cv-ats-us build_docs.py) /CreationDate (D:%s) >>"
                     % (pdf_str(title), stamp)).encode("latin-1"))
         out = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
@@ -418,7 +469,7 @@ def write_docx(path, blocks, paper, margin_in, font, lang, title, author):
               '<w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>'
               '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/>'
               '</w:style></w:styles>' % w_ns).replace("{f}", font).replace("{l}", lang)
-    now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     parts = {
         "[Content_Types].xml": (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
@@ -468,29 +519,59 @@ def write_docx(path, blocks, paper, margin_in, font, lang, title, author):
 
 # ---------------------------------------------------------------- main
 
+# Latin letters with no Unicode decomposition: NFKD would drop them from file names ("Łucja" -> "ucja")
+FOLD = str.maketrans({"Ł": "L", "ł": "l", "Ø": "O", "ø": "o", "Đ": "D", "đ": "d", "Þ": "Th", "þ": "th", "ß": "ss",
+                      "Æ": "AE", "æ": "ae", "Œ": "OE", "œ": "oe", "ı": "i"})
+
+
 def slug(s):
-    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
-    return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-") or "x"
+    a = unicodedata.normalize("NFKD", s.translate(FOLD)).encode("ascii", "ignore").decode()
+    if len(re.findall(r"[A-Za-z]", a)) < len(re.findall(r"[^\W\d_]", s)):  # a letter would vanish: keep the name
+        a = unicodedata.normalize("NFC", s)
+    return re.sub(r"[\W_]+", "-", a).strip("-") or "x"
 
 
-def settings(meta):
+def _number(v):
+    return type(v) in (int, float) and math.isfinite(v)
+
+
+# (block, key, valid, rule): generation settings, checked only when present (absent = default).
+SETTINGS = (
+    ("meta", "market", lambda v: isinstance(v, str), "must be text (US, FR or INTERNATIONAL)"),
+    ("meta", "language", lambda v: isinstance(v, str), "must be text"),
+    ("meta", "paper", lambda v: v in (None, "") or (isinstance(v, str) and v in PAPER_PT), "must be letter or a4"),
+    ("meta", "font", lambda v: isinstance(v, str) and v in FONTS, "must be one of %s" % ", ".join(FONTS)),
+    ("meta", "margin_in", lambda v: _number(v) and 0.5 <= v <= 1.0, "must be a number of inches within 0.5-1.0"),
+    ("meta", "fit", lambda v: type(v) is bool, "must be true or false"),
+    ("meta", "max_cv_pages", lambda v: type(v) is int and v >= 1, "must be a whole number of pages, 1 or more"),
+    ("cv", "name_size", lambda v: _number(v) and v > 0, "must be a positive number of points"),
+)
+
+
+def settings_errors(meta, cv=None):
+    """Located errors in the generation settings. audit_package.py reports them before generation; build()
+    refuses them before writing anything, instead of crashing or silently ignoring a value."""
+    blocks = {"meta": meta, "cv": cv}
+    return ["%s.%s %s (got %r)" % (block, key, rule, blocks[block][key]) for block, key, valid, rule in SETTINGS
+            if isinstance(blocks[block], dict) and key in blocks[block] and not valid(blocks[block][key])]
+
+
+def settings(meta, cv=None):
+    errors = settings_errors(meta, cv)
+    if errors:
+        raise SystemExit("invalid generation settings: " + "; ".join(errors))
     market = meta.get("market", "US").upper()
     paper = meta.get("paper") or {"US": "letter", "FR": "a4"}.get(market, "a4")
     margin = float(meta.get("margin_in", 0.7))
     font = meta.get("font", "Arial")
-    if paper not in PAPER_PT:
-        raise SystemExit("paper must be letter or a4")
-    if not 0.5 <= margin <= 1.0:
-        raise SystemExit("margin_in must be within 0.5-1.0 inch")
-    if font not in FONTS:
-        raise SystemExit("font must be one of %s" % (FONTS,))
     lang = meta.get("language", "en")
     return market, paper, margin, font, {"en": "en-US", "fr": "fr-FR"}.get(lang, lang)
 
 
 def build(pkg, out_dir, only=None, pdf=True):
     meta = pkg.get("meta", {})
-    market, paper, margin, font, lang = settings(meta)
+    market, paper, margin, font, lang = settings(meta, pkg.get("cv"))
+    only = only or {"cover-letter": "letter", "create": "cv", "tailor": "cv"}.get(meta.get("mode"))
     fr = meta.get("language", "en") == "fr"
     name, company = pkg["cv"]["name"], meta.get("company", "")
     kinds = {"cv": ("CV" if fr or market != "US" else "Resume", cv_blocks),
@@ -510,7 +591,12 @@ def build(pkg, out_dir, only=None, pdf=True):
         title = "%s - %s" % (name, label.replace("-", " "))
         write_docx(stem + ".docx", blocks, paper, margin, font, lang, title, name)
         rec = {"kind": kind, "docx": stem + ".docx"}
-        if pdf:
+        lost = pdf_unencodable(blocks) if pdf else []
+        if lost:
+            rec.update(pdf=None, pdf_error="characters outside the built-in PDF font (WinAnsi): %s. No PDF written: "
+                                           "export the DOCX to PDF with Word or LibreOffice; never remove or replace "
+                                           "these characters (names, places)" % " ".join(lost))
+        elif pdf:
             doc = Pdf(paper, margin * 72)
             doc.render(blocks)
             with open(stem + ".pdf", "wb") as f:
@@ -520,7 +606,7 @@ def build(pkg, out_dir, only=None, pdf=True):
             rec["fit"] = fit
         written.append(rec)
     return {"market": market, "paper": paper, "font_docx": font, "font_pdf": "Helvetica (Arial-metric)",
-            "files": written}
+            "files": written, "manifest": write_manifest(out_dir, pkg, written)}
 
 
 def main(argv=None):
@@ -530,9 +616,13 @@ def main(argv=None):
     ap.add_argument("--only", choices=["cv", "letter"])
     ap.add_argument("--no-pdf", action="store_true")
     a = ap.parse_args(argv)
-    with open(a.package, encoding="utf-8") as f:
+    if hasattr(sys.stdout, "reconfigure"):  # a redirected Windows console would otherwise write cp1252
+        sys.stdout.reconfigure(encoding="utf-8")
+    with open(a.package, encoding="utf-8-sig") as f:
         pkg = json.load(f)
-    print(json.dumps(build(pkg, a.out, a.only, not a.no_pdf), indent=2, ensure_ascii=False))
+    res = build(pkg, a.out, a.only, not a.no_pdf)
+    print(json.dumps(res, indent=2, ensure_ascii=False))
+    return 1 if any(r.get("pdf_error") for r in res["files"]) else 0
 
 
 if __name__ == "__main__":

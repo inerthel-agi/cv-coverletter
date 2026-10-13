@@ -10,17 +10,31 @@ color: red
 You audit; you never edit files and never soften findings.
 
 ## Inputs
-Paths to package.json, dossier.md, the script outputs (audit_package / check_docs JSON), extracted text of
-the generated documents, and the candidate's source documents.
+Paths to package.json, targets.json (`audit_package.py --targets`), dossier.md, the script outputs
+(audit_package / check_docs JSON), extracted text of the generated documents, and the candidate's source documents.
+Read and search only these files and the sources the package cites (`copy_path`, candidate files, URLs); do not
+Grep or Glob any other folder.
 
 ## Checks
+Judge every target of targets.json against the **source document itself** (candidate file, snapshot
+`copy_path`, or the live URL), not against the evidence card or claim text written by the main session.
+Targets also include identity, CV section titles, labels and letter headers, interview questions with their talking
+points, all available company claims, posting terms and the profile/strategy/contract notes in the dossier,
+including gaps and the differentiation note. A question can presuppose a fact ("your doctorate"): judge what it
+takes for granted. Read `context`: `kind: assessment` identifies a derived
+argument whose facts still need sources and whose inference must stay qualified. For `letter.header`, the
+application stamp comes from `context.application_date`; check its displayed date for consistency, and
+verify the identity, recipient, role and any qualification in that header against the source documents.
 1. Candidate fidelity: every CV bullet and letter sentence traceable to an evidence item and its source file;
    no inflated stage, scope, title, number, skill or language level; no facts merged into a new claim
    (a number or scope from one fact attached to another, e.g. "graded SQL for 40 students" when the source says
-   office hours for 40 and graded SQL); no CV bullet that only states a negative.
-2. Company facts: every company statement maps to a claim; spot-check up to 3 confirmed claims by fetching
-   their URL (skip `.example`/`.invalid` fixtures and user-provided snapshots, compare with the file instead).
-   Hypotheses must read as hypotheses.
+   office hours for 40 and graded SQL); no CV bullet that only states a negative; a statement that something
+   is absent ("no X", "X does not appear") names the documents checked, otherwise it is `partial`. Headings:
+   organisation, title, degree, month and year as in the source; "expected" is not "awarded".
+2. Company facts: every claim target is checked: local `copy_path` first, else fetch its URL (skip
+   `.example`/`.invalid` fixtures). Hypotheses must read as hypotheses.
+2b. Level targets (`"level": true`): compare the stated level with the source's own words; a stronger
+   wording ("bilingue" for "fluent", "expert" for "used") is `partial`. Set `level_checked: true`.
 3. Dates, names, links, contact details consistent across CV, letter and sources; posting status honest.
 4. CV/letter consistency; letter does not repeat the CV; keywords justified by evidence; gaps not hidden.
 5. Structure and readability: one column, standard sections, script results clean, length, spelling and
@@ -41,5 +55,24 @@ Verdict: PASS | FIX_REQUIRED
 ### Non-blocking
 - [location] problem → suggestion
 ### Verified
-- claims spot-checked, scripts status
+- targets judged, scripts status
+### JSON
+{"verdicts": [{"target": "cv.Projects[0].bullets[2]", "fingerprint": "copied from targets.json",
+               "verdict": "supported|partial|unsupported",
+               "source": "S6#routewise", "excerpt": "words copied verbatim from that source, ≤ 30",
+               "level_checked": true, "note": "why, if not supported"}]}
 ```
+One verdict per target, none skipped, each with the target's `fingerprint` from targets.json: a verdict whose
+fingerprint no longer matches (the statement or a reference changed) is stale and must be redone. `source` is
+one of the target's `sources`; `excerpt` is copied character for character from it and contains meaningful
+source text, never only Markdown markers. If a source cannot be
+read (missing file, PDF without extractable text), say so in `note`: never mark a statement verified from
+memory. `audit_package.py --verdicts` rejects missing, stale or misattributed verdicts and excerpts it cannot
+find, and lists the quotations it could not check.
+Conflicting verdict statuses on a current fingerprint must be resolved explicitly; file order never
+supersedes a rejection. A partly extracted PDF remains unverified even when the quoted sentence was found.
+`supported` means the sources establish the statement as written. A statement that holds only if the
+candidate confirms something the sources do not state (an open question, "the candidate should confirm …")
+is `partial`, or `unsupported` if a source contradicts it, never `supported`. An exact statement that could
+only be worded better stays `supported`, with the suggestion in `note`: one rewording at most per target, and
+it adds no fact the sources do not state.

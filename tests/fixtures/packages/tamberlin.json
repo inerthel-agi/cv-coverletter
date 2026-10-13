@@ -1,5 +1,7 @@
 {
   "meta": {
+    "schema": 2,
+    "mode": "package",
     "fixture": true,
     "market": "US",
     "language": "en",
@@ -20,7 +22,8 @@
       "published": "unknown",
       "accessed": "2026-10-08",
       "reachable": true,
-      "retrieved_via": "user-provided snapshot"
+      "retrieved_via": "user-provided snapshot",
+      "copy_path": "tests/fixtures/companies/tamberlin-print/about.md"
     },
     {
       "id": "S2",
@@ -30,7 +33,8 @@
       "published": "2026-02-10",
       "accessed": "2026-10-08",
       "reachable": true,
-      "retrieved_via": "user-provided snapshot"
+      "retrieved_via": "user-provided snapshot",
+      "copy_path": "tests/fixtures/companies/tamberlin-print/news-order-portal.md"
     },
     {
       "id": "S3",
@@ -40,7 +44,8 @@
       "published": "2026-09-30",
       "accessed": "2026-10-08",
       "reachable": true,
-      "retrieved_via": "user-provided snapshot"
+      "retrieved_via": "user-provided snapshot",
+      "copy_path": "tests/fixtures/companies/tamberlin-print/job-posting.md"
     },
     {
       "id": "S5",
@@ -159,7 +164,17 @@
           "Power Automate"
         ]
       }
-    ]
+    ],
+    "language": "en",
+    "contract": {
+      "type": "full-time",
+      "duration_months": null,
+      "rhythm": null,
+      "start": null,
+      "location": "Dayton, OH",
+      "remote": "on site",
+      "source": "S3"
+    }
   },
   "evidence": [
     {
@@ -185,7 +200,17 @@
       "metrics": [
         "Survey of the 4 coordinators: planning time per shift fell from about 25 minutes to about 10 minutes"
       ],
-      "source": "S6#routewise"
+      "source": "S6#routewise",
+      "excerpts": [
+        "Dates: Jan 2026 – Apr 2026. Capstone, team of 3. Status: used in a pilot.",
+        "volunteer coordinators of the Northbridge Community Pantry planned delivery routes for volunteer drivers by hand",
+        "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes.",
+        "I designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints.",
+        "I wrote pytest tests for the API endpoints.",
+        "Docker: used for local development only; the app was never deployed with Kubernetes.",
+        "used by 4 volunteer coordinators during a 3-week pilot",
+        "In a survey of the 4 coordinators, they reported that planning time per shift fell from about 25 minutes to about 10 minutes."
+      ]
     },
     {
       "id": "E2",
@@ -204,7 +229,14 @@
         "Not used in production; accuracy not formally measured"
       ],
       "metrics": [],
-      "source": "S6#shelfscan"
+      "source": "S6#shelfscan",
+      "excerpts": [
+        "Dates: Oct 2025 – Dec 2025. Computer Vision course project. Status: prototype.",
+        "a tool that counts products on shelf photos",
+        "I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+        "trained and tested on a public shelf-image dataset",
+        "not used in production; accuracy not formally measured"
+      ]
     },
     {
       "id": "E3",
@@ -222,7 +254,12 @@
         "Adopted by 3 student club websites"
       ],
       "metrics": [],
-      "source": "S6#altcheck"
+      "source": "S6#altcheck",
+      "excerpts": [
+        "Dates: Jun 2025 – Aug 2025. Personal project. Status: used.",
+        "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests",
+        "adopted by 3 student club websites"
+      ]
     },
     {
       "id": "E4",
@@ -239,7 +276,13 @@
       "metrics": [
         "Supervisor estimated about 2 hours of staff time saved per week"
       ],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "IT Support Assistant (part-time) — Northbridge Public Library, Columbus, OH — Sep 2023 – May 2026",
+        "Resolved device and account issues for library staff and patrons.",
+        "Wrote a Python script that automated the weekly public-computer reservation report",
+        "My supervisor estimated it saved about 2 hours of staff time per week."
+      ]
     },
     {
       "id": "E5",
@@ -254,7 +297,12 @@
         "Graded SQL assignments"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Teaching Assistant, Introduction to Databases — Northbridge State University — Jan 2025 – May 2025",
+        "Held weekly office hours for a class of 40 students.",
+        "Graded SQL assignments."
+      ]
     },
     {
       "id": "E6",
@@ -267,7 +315,11 @@
         "Degree awarded May 2026"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Northbridge State University, Columbus, OH — B.S. Computer Science, Aug 2022 – May 2026 (degree awarded May 2026)",
+        "Coursework: Data Structures, Databases, Software Engineering, Computer Vision"
+      ]
     },
     {
       "id": "E7",
@@ -279,7 +331,20 @@
         "English (fluent)"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "French (native), English (fluent)."
+      ],
+      "levels": [
+        {
+          "subject": "French",
+          "level": "native"
+        },
+        {
+          "subject": "English",
+          "level": "fluent"
+        }
+      ]
     },
     {
       "id": "E8",
@@ -288,10 +353,15 @@
       "tools": [],
       "facts": [
         "Available to start in January 2027",
-        "Open to relocating to Lyon, France"
+        "Open to relocating to Lyon, France",
+        "Based in Columbus, OH"
       ],
       "metrics": [],
-      "source": "S5"
+      "source": "S5",
+      "excerpts": [
+        "Available to start in January 2027. Open to relocating to Lyon, France.",
+        "Columbus, OH | +1 555 0142"
+      ]
     }
   ],
   "strategy": {
@@ -378,7 +448,62 @@
           "C4"
         ]
       }
-    ]
+    ],
+    "contract_fit": [
+      {
+        "id": "K1",
+        "field": "type",
+        "item": "contract type",
+        "posting": "full-time",
+        "candidate": "not stated in the candidate's documents",
+        "status": "unknown",
+        "basis": [
+          "S3"
+        ]
+      },
+      {
+        "id": "K2",
+        "field": "start",
+        "item": "start date",
+        "posting": "not stated",
+        "candidate": "available from January 2027",
+        "status": "unknown",
+        "basis": [
+          "S3",
+          "E8"
+        ]
+      },
+      {
+        "id": "K3",
+        "field": "location",
+        "item": "location",
+        "posting": "Dayton, OH (on site)",
+        "candidate": "Based in Columbus, OH; relocation stated only for Lyon",
+        "status": "unknown",
+        "basis": [
+          "S3",
+          "E8"
+        ]
+      }
+    ],
+    "hiring_context": {
+      "problem": "Automate order intake from email and the portal into the production schedule",
+      "risk": "A first in-house engineer without senior engineers nearby, building tools that colleagues use every day",
+      "basis": [
+        "C3",
+        "C4",
+        "R3"
+      ]
+    },
+    "contribution": {
+      "scope": "Start with the email and portal order-intake step, tested before anyone relies on it",
+      "horizon_months": null,
+      "basis": [
+        "C3",
+        "C4",
+        "R3"
+      ]
+    }
   },
   "cv": {
     "name": "Camille Testard",
@@ -575,7 +700,8 @@
         ],
         "evidence": [
           "E4"
-        ]
+        ],
+        "contribution": true
       }
     ],
     "closing": "Sincerely,",
@@ -587,6 +713,9 @@
       "talking_points": "Email orders are still entered by hand and the plan is to connect both channels by mid-2027. I have not built an intake flow. Start by mapping one email order to the production-schedule fields, then script the repetitive step, as I did for the reservation report.",
       "evidence": [
         "E4"
+      ],
+      "claims": [
+        "C3"
       ]
     },
     {
@@ -596,6 +725,36 @@
         "E4",
         "E1"
       ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "need": [
+        "R5"
+      ],
+      "evidence": [
+        "E4"
+      ],
+      "blocking": false,
+      "answer": null,
+      "ask": "Have you used Power Automate or another workflow tool (Zapier, Power Apps, n8n) anywhere?",
+      "why": "R5 is a declared gap; any workflow-tool use would be nearer evidence than scripting."
+    },
+    {
+      "id": "Q2",
+      "need": [
+        "K1",
+        "K2",
+        "K3"
+      ],
+      "evidence": [
+        "E8"
+      ],
+      "blocking": false,
+      "answer": null,
+      "ask": "Are you looking for a full-time role, from which date, and can you work on site in Dayton, OH?",
+      "why": "Your documents state January 2027 and a move to Lyon only."
     }
   ]
 }

@@ -25,6 +25,11 @@ Posting URL and/or pasted text or file path, company name, today's date. No cand
    languages/sites), what success looks like. Team context only as stated: team size, first hire,
    reporting line, process words (code review, release, SDLC, compliance, on-call), sites. Note the
    posting's register (formal / plain / casual) and its exact terms for titles, tools and methods.
+6. Employment contract, only as stated (else `null`): type (`cdi|cdd|internship|alternance|apprenticeship|
+   full-time|part-time|fixed-term|freelance|unknown`), duration in months, rhythm (alternance/school schedule),
+   start date, location, remote/hybrid/on site. Language of the posting (`en`, `fr`, …).
+7. Required level per requirement, in the posting's own words (`"fluent"`, `"3+ years"`, `"advanced"`), or
+   `null`. Never turn "familiarity with" into a level.
 
 ## Output (final message only)
 ```
@@ -39,7 +44,9 @@ Logistics: location, remote/hybrid, contract type and length, language, level, s
 register · exact terms to mirror (each tied to a posting line or marked ASSUMED)
 ### Contradictions, vagueness, red flags
 ### JSON
-{"job": {"source": "S?", "posting_status": "...", "requirements": [{"id","text","level"}]}, "sources": [...]}
+{"job": {"source": "S?", "posting_status": "...", "language": "en|fr|...",
+         "contract": {"type", "duration_months", "rhythm", "start", "location", "remote", "source": "S?"},
+         "requirements": [{"id","text","level":"required|preferred","level_required"}]}, "sources": [...]}
 ```
-Leave `match` and `gap_terms` empty: the strategist fills them from candidate evidence.
+Leave `match`, `gap_terms` and `level_match` empty: the strategist fills them from candidate evidence.
 '''

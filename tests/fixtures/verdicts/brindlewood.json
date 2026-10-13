@@ -1,0 +1,488 @@
+{
+  "verdicts": [
+    {
+      "target": "cv.identity",
+      "fingerprint": "15fbdaf0cc4ce9a3",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Columbus, OH | +1 555 0142 | camille.testard@example.com | portfolio.camille-testard.example",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.value_proposition",
+      "fingerprint": "206b3a9d3f1aec5c",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
+    },
+    {
+      "target": "cv.headline",
+      "fingerprint": "2d3f9cce49e3cbb4",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
+    },
+    {
+      "target": "cv.Education[0]",
+      "fingerprint": "7f2101efdd68f558",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Northbridge State University, Columbus, OH — B.S. Computer Science, Aug 2022 – May 2026 (degree awarded May 2026)"
+    },
+    {
+      "target": "cv.Projects[0]",
+      "fingerprint": "4eeefca85d4516e1",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Dates: Jan 2026 – Apr 2026. Capstone, team of 3. Status: used in a pilot."
+    },
+    {
+      "target": "cv.Projects[1]",
+      "fingerprint": "18bb7494696a1b3f",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
+    },
+    {
+      "target": "cv.Experience[0]",
+      "fingerprint": "45809195d25b7086",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "IT Support Assistant (part-time) — Northbridge Public Library, Columbus, OH — Sep 2023 – May 2026"
+    },
+    {
+      "target": "cv.Experience[1]",
+      "fingerprint": "2b91c3fefe0ea986",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Teaching Assistant, Introduction to Databases — Northbridge State University — Jan 2025 – May 2025"
+    },
+    {
+      "target": "cv.Education[0].bullets[0]",
+      "fingerprint": "94e6978e9909ec81",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Coursework: Data Structures, Databases, Software Engineering, Computer Vision"
+    },
+    {
+      "target": "cv.Projects[0].bullets[0]",
+      "fingerprint": "9b179e9bfff30020",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
+    },
+    {
+      "target": "cv.Projects[0].bullets[1]",
+      "fingerprint": "bf9d04a422f215a2",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints."
+    },
+    {
+      "target": "cv.Projects[0].bullets[2]",
+      "fingerprint": "a552fd8cf881bc03",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "In a survey of the 4 coordinators, they reported that planning time per shift fell from about 25 minutes to about 10 minutes."
+    },
+    {
+      "target": "cv.Projects[1].bullets[0]",
+      "fingerprint": "738435091afd988f",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
+    },
+    {
+      "target": "cv.Experience[0].bullets[0]",
+      "fingerprint": "25e0f94a31796213",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "My supervisor estimated it saved about 2 hours of staff time per week."
+    },
+    {
+      "target": "cv.Experience[0].bullets[1]",
+      "fingerprint": "60b98ba28b4c516d",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Resolved device and account issues for library staff and patrons."
+    },
+    {
+      "target": "cv.Experience[1].bullets[0]",
+      "fingerprint": "77bb808a547a891a",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Held weekly office hours for a class of 40 students."
+    },
+    {
+      "target": "cv.Skills[0]",
+      "fingerprint": "d7285c55a37d3396",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
+    },
+    {
+      "target": "cv.Skills[1]",
+      "fingerprint": "55f6ab163fdb7c35",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
+    },
+    {
+      "target": "cv.Skills[2]",
+      "fingerprint": "822a8372d774aea6",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "French (native), English (fluent).",
+      "level_checked": true
+    },
+    {
+      "target": "letter.header",
+      "fingerprint": "d6adad6f3ea8b6c7",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "# Junior Software Engineer, Routing — Indianapolis, IN (hybrid), full-time",
+      "level_checked": true
+    },
+    {
+      "target": "letter.paragraphs[0]",
+      "fingerprint": "14f53dcfc8da7584",
+      "verdict": "supported",
+      "source": "S2",
+      "excerpt": "Brindlewood Freight Labs today launched the Lanes API, which lets carriers' own dispatch systems request optimized multi-stop routes. The company said it plans to extend the API to refrigerated freight in 2027."
+    },
+    {
+      "target": "letter.paragraphs[1]",
+      "fingerprint": "5f37b5e3b00f6c34",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
+    },
+    {
+      "target": "letter.paragraphs[2]",
+      "fingerprint": "c1eb99e07516026f",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Wrote a Python script that automated the weekly public-computer reservation report"
+    },
+    {
+      "target": "letter.paragraphs[3]",
+      "fingerprint": "4e547f99d53e413f",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
+    },
+    {
+      "target": "letter.paragraphs[4]",
+      "fingerprint": "411a2321f2913e82",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "You will join the Routing team that builds the Lanes API."
+    },
+    {
+      "target": "claim:C1",
+      "fingerprint": "1f307ebed3ecb2d9",
+      "verdict": "supported",
+      "source": "S1",
+      "excerpt": "Brindlewood Freight Labs builds dispatch and routing software for regional freight carriers in the US Midwest. The company is based in Indianapolis, Indiana.",
+      "level_checked": true
+    },
+    {
+      "target": "claim:C2",
+      "fingerprint": "d63145560552bdc9",
+      "verdict": "supported",
+      "source": "S2",
+      "excerpt": "Brindlewood Freight Labs today launched the Lanes API, which lets carriers' own dispatch systems request optimized multi-stop routes. The company said it plans to extend the API to refrigerated freight in 2027."
+    },
+    {
+      "target": "claim:C3",
+      "fingerprint": "5f3effc1d9c45323",
+      "verdict": "supported",
+      "source": "S3",
+      "excerpt": "Our engineering team moved its routing services from a legacy monolith to Python services built with FastAPI on top of PostgreSQL. The services are deployed on Kubernetes."
+    },
+    {
+      "target": "claim:C4",
+      "fingerprint": "037e326c0f1f4f4f",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team."
+    },
+    {
+      "target": "claim:C5",
+      "fingerprint": "1ab0b180bab20b5e",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "You will join the Routing team that builds the Lanes API."
+    },
+    {
+      "target": "claim:C6",
+      "fingerprint": "930f93c5295f4549",
+      "verdict": "supported",
+      "source": "S7",
+      "excerpt": "title: Our team - Brindlewood Freight Labs",
+      "level_checked": true
+    },
+    {
+      "target": "claim:C7",
+      "fingerprint": "ebb925b27d070e9e",
+      "verdict": "supported",
+      "source": "S7",
+      "excerpt": "Brindlewood Freight Labs was founded in 2023 and raised a seed round in January 2026. We are a team of 18, including 7 engineers. This year we are hiring our first junior engineers to grow the Routing team."
+    },
+    {
+      "target": "interview[0]",
+      "fingerprint": "75e20ef52fff1e72",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
+    },
+    {
+      "target": "interview[1]",
+      "fingerprint": "3b0ae062854fcc25",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
+    },
+    {
+      "target": "job.posting_status",
+      "fingerprint": "70ba07b3fed276be",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "status: open",
+      "level_checked": true
+    },
+    {
+      "target": "job.contract",
+      "fingerprint": "b6edba29cd085caf",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R1",
+      "fingerprint": "e0578a049397a9a7",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R2",
+      "fingerprint": "e5c67f06bf622335",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R3",
+      "fingerprint": "2fbaad7e773afdd2",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R4",
+      "fingerprint": "63cda60450c52b4a",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R5",
+      "fingerprint": "756ae4c2218c693d",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Required: Python; SQL; REST APIs; Git; experience deploying services on Kubernetes.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R6",
+      "fingerprint": "03f9be3dc5076aa0",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "job.requirement:R7",
+      "fingerprint": "7400a7db87f7d380",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "company_profile",
+      "fingerprint": "b7ce8147d62a1f2f",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "You will join the Routing team that builds the Lanes API.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.hiring_context",
+      "fingerprint": "30f16316cd5f34b2",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.contribution",
+      "fingerprint": "bcf822cb217eea8c",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.contract_fit[0]",
+      "fingerprint": "2409c90271dc4359",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.contract_fit[1]",
+      "fingerprint": "05018002b00e0ed0",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Available to start in January 2027. Open to relocating to Lyon, France.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.contract_fit[2]",
+      "fingerprint": "feb71021a7e37710",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "**Northbridge State University**, Columbus, OH — B.S. Computer Science, Aug 2022 – May 2026 (degree awarded May 2026)",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[0]",
+      "fingerprint": "3f1aa29efe22643f",
+      "verdict": "supported",
+      "source": "S3",
+      "excerpt": "Our engineering team moved its routing services from a legacy monolith to Python services built with FastAPI on top of PostgreSQL. The services are deployed on Kubernetes.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[1]",
+      "fingerprint": "599d319b1fa49105",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "- What: a tool that counts products on shelf photos. I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[2]",
+      "fingerprint": "e05d119c1853b88b",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "**IT Support Assistant (part-time)** — Northbridge Public Library, Columbus, OH — Sep 2023 – May 2026",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[3]",
+      "fingerprint": "14fa829ebbbe8b2f",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[4]",
+      "fingerprint": "07d886574723b4b4",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.adaptation[5]",
+      "fingerprint": "459323ca37b361f5",
+      "verdict": "supported",
+      "source": "S3",
+      "excerpt": "Our engineering team moved its routing services from a legacy monolith to Python services built with FastAPI on top of PostgreSQL. The services are deployed on Kubernetes.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.arguments[0]",
+      "fingerprint": "2cc4860f3a68f87d",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "- What: a tool that counts products on shelf photos. I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.arguments[1]",
+      "fingerprint": "aedb81e6519f8c30",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "- What: a tool that counts products on shelf photos. I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+      "level_checked": true
+    },
+    {
+      "target": "strategy.arguments[2]",
+      "fingerprint": "96207e1d54771451",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "- What: a tool that counts products on shelf photos. I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
+      "level_checked": true
+    },
+    {
+      "target": "cv.sections[0].title",
+      "fingerprint": "d32b19fc5c4b41b5",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Education"
+    },
+    {
+      "target": "cv.sections[1].title",
+      "fingerprint": "5ea2138b0100c964",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Projects — Camille Testard"
+    },
+    {
+      "target": "cv.sections[2].title",
+      "fingerprint": "92f402c8a4a53845",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Experience"
+    },
+    {
+      "target": "cv.sections[3].title",
+      "fingerprint": "9fbea1c878f4a547",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Skills"
+    },
+    {
+      "target": "strategy.gaps[0]",
+      "fingerprint": "ab0123245d2037fa",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
+    },
+    {
+      "target": "strategy.gaps[1]",
+      "fingerprint": "55e2c0ce99de8dc8",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Python, SQL, JavaScript, FastAPI, Node.js, PostgreSQL, Git, GitHub Actions, Docker (local development only), PyTorch and OpenCV (coursework)."
+    },
+    {
+      "target": "strategy.differentiation",
+      "fingerprint": "8406379f5a5968d6",
+      "verdict": "supported",
+      "source": "S3",
+      "excerpt": "Our engineering team moved its routing services from a legacy monolith to Python services built with FastAPI on top of PostgreSQL."
+    }
+  ]
+}

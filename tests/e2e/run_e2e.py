@@ -27,7 +27,8 @@ FIX = "tests/fixtures"
 CAND = "%s/candidate/camille-testard-cv.md and %s/candidate/projects.md" % (FIX, FIX)
 TEST_NOTE = ("Test context: candidate and company are FICTITIOUS. Fixture convention: each local company copy is "
              "a faithful, dated snapshot of a page that is live in this fictitious world, so record it with its URL, "
-             "reachable: true and retrieved_via: user-provided snapshot. Do not fetch the .example URLs and do no "
+             "reachable: true, retrieved_via: user-provided snapshot and copy_path (the local file). Do not fetch the "
+             ".example URLs and do no "
              "web search about this company. Send nothing to anyone. Write package.json, the documents and "
              "dossier.md in the output folder given.")
 ASK = ("Tailor my CV to this posting and write a cover letter explaining why my projects are relevant to this "
@@ -59,7 +60,7 @@ SCENARIOS = {
                   % (ASK, FIX, FIX, CAND),
 }
 TOOLS = ["Read", "Write", "Edit", "Glob", "Grep", "WebFetch", "WebSearch", "Agent", "Skill",
-         "Bash(python3 *)", "Bash(mkdir *)", "Bash(ls *)"]
+         "Bash(python3 *)", "Bash(python *)", "Bash(py *)", "Bash(mkdir *)", "Bash(ls *)"]  # python/py: Windows
 
 
 def make_sandbox(name):
@@ -74,22 +75,32 @@ def make_sandbox(name):
 
 
 def run_claude(name, model, budget, timeout):
+    """One live run. Earlier outputs of this scenario are deleted first, so a run that writes nothing can never be
+    validated with the files of a previous run; the exit status is recorded in <name>.run.json."""
     os.makedirs(OUT, exist_ok=True)
+    shutil.rmtree(os.path.join(OUT, name), ignore_errors=True)
+    for suffix in (".transcript.jsonl", ".run.json"):
+        if os.path.exists(os.path.join(OUT, name + suffix)):
+            os.remove(os.path.join(OUT, name + suffix))
     box = make_sandbox(name)
     cmd = ["claude", "-p", SCENARIOS[name], "--model", model, "--permission-mode", "acceptEdits",
            "--allowedTools"] + TOOLS + ["--max-budget-usd", str(budget), "--no-session-persistence",
                                         "--output-format", "stream-json", "--verbose"]
+    record = {"model": model, "started": datetime.datetime.now().isoformat(timespec="seconds"), "timed_out": False}
     try:
         r = subprocess.run(cmd, cwd=box, capture_output=True, text=True, timeout=timeout)
-        out = r.stdout
+        out, record["returncode"] = r.stdout, r.returncode
     except subprocess.TimeoutExpired as e:
         out = (e.stdout or b"").decode() if isinstance(e.stdout, bytes) else (e.stdout or "")
+        record.update(returncode=None, timed_out=True)
     produced = os.path.join(box, "applications", "_e2e", name)
     if os.path.isdir(produced):
-        shutil.copytree(produced, os.path.join(OUT, name), dirs_exist_ok=True)
+        shutil.copytree(produced, os.path.join(OUT, name))
     shutil.rmtree(box, ignore_errors=True)
     with open(os.path.join(OUT, name + ".transcript.jsonl"), "w", encoding="utf-8") as f:
         f.write(out)
+    with open(os.path.join(OUT, name + ".run.json"), "w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2)
     return name
 
 
@@ -119,21 +130,72 @@ AGENTS = ["company-researcher", "job-intelligence", "candidate-evidence", "recru
           "application-auditor"]
 
 
-def delegations(name):
-    """subagent_type of each top-level Agent call in the stream-json transcript (None if no transcript)."""
+def events(name):
+    """Top-level transcript events in order (None if no transcript): ("use", id, tool, input),
+    ("result", tool_use_id, text, is_error) and ("text", text) for other messages (e.g. background-agent notices)."""
     path = os.path.join(OUT, name + ".transcript.jsonl")
     if not os.path.exists(path):
         return None
-    calls = []
-    for line in open(path, encoding="utf-8"):
-        try:
-            m = json.loads(line)
-        except ValueError:
-            continue
-        if m.get("type") == "assistant" and not m.get("parent_tool_use_id"):
-            calls += [c["input"].get("subagent_type") for c in m["message"].get("content", [])
-                      if c.get("type") == "tool_use" and c.get("name") in ("Agent", "Task")]
-    return calls
+    out = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            try:
+                m = json.loads(line)
+            except ValueError:
+                continue
+            if m.get("parent_tool_use_id") or m.get("type") not in ("assistant", "user"):
+                continue
+            content = (m.get("message") or {}).get("content", [])
+            for c in [{"type": "text", "text": content}] if isinstance(content, str) else content:
+                if c.get("type") == "tool_use":
+                    out.append(("use", c.get("id"), c.get("name"), c.get("input") or {}))
+                elif c.get("type") == "tool_result":
+                    body = c.get("content")
+                    text = body if isinstance(body, str) else " ".join(
+                        x.get("text", "") for x in body or [] if isinstance(x, dict))
+                    out.append(("result", c.get("tool_use_id"), text, bool(c.get("is_error"))))
+                elif c.get("type") == "text" and m.get("type") == "user":
+                    out.append(("text", c.get("text", "")))
+    return out
+
+
+def tool_calls(name):
+    """(tool name, input) of each top-level tool call, in order (None if no transcript)."""
+    ev = events(name)
+    return None if ev is None else [(e[2], e[3]) for e in ev if e[0] == "use"]
+
+
+def delegations(name):
+    """subagent_type of each top-level Agent call in the stream-json transcript (None if no transcript)."""
+    calls = tool_calls(name)
+    return None if calls is None else [i.get("subagent_type") for n, i in calls if n in ("Agent", "Task")]
+
+
+STRATEGY_NOTE = "## strategy"  # first line of the recruitment-strategist output contract
+
+
+def strategy_before_writing(name):
+    """True if the recruitment-strategist's final note was back before the first write into the output folder
+    (None: no transcript). A call, a background launch acknowledgement or a failed call is not the note.
+    SKILL.md: write nothing, not even package.json, until the strategy note is back."""
+    evs = events(name)
+    if evs is None:
+        return None
+    calls, ready = set(), False
+    for e in evs:
+        if e[0] == "use" and e[2] in ("Agent", "Task") and e[3].get("subagent_type") == "recruitment-strategist":
+            calls.add(e[1])
+        elif e[0] == "result" and e[1] in calls and not e[3] and STRATEGY_NOTE in e[2]:
+            ready = True
+        elif e[0] == "text" and calls and STRATEGY_NOTE in e[1]:  # background agent's completion notice
+            ready = True
+        elif e[0] == "use":
+            n, i = e[2], e[3]
+            target = str(i.get("file_path", "")) + " " + str(i.get("command", "") if n == "Bash" else "")
+            if n in ("Write", "Edit", "NotebookEdit", "Bash") and "applications" in target.replace("\\", "/") and (
+                    n != "Bash" or "build_docs" in target or ">" in target):
+                return ready
+    return ready
 
 
 def validate(name):
@@ -143,22 +205,38 @@ def validate(name):
     def ok(label, cond, detail=""):
         checks.append({"check": label, "ok": bool(cond), "detail": detail})
 
+    run_path = os.path.join(OUT, name + ".run.json")
+    run = None
+    if os.path.exists(run_path):
+        with open(run_path, encoding="utf-8") as f:
+            run = json.load(f)
+    ok("run recorded and exited 0 (outputs belong to this run)", run and run.get("returncode") == 0, run)
     path = os.path.join(OUT, name + ".transcript.jsonl")
     if os.path.exists(path):  # the run must never see the expected answers (main session or subagents)
-        peeks = [l for l in open(path, encoding="utf-8") if '"tool_use"' in l and "fixtures/packages" in l]
+        with open(path, encoding="utf-8") as f:
+            peeks = [l for l in f if '"tool_use"' in l and "fixtures/packages" in l]
         ok("never opened the reference packages", not peeks, "%d tool calls touched them" % len(peeks))
     calls = delegations(name)
     if calls is not None:
         ok("all 5 agents delegated, strategist before auditor", set(AGENTS) <= set(calls) and
            calls.index("recruitment-strategist") < calls.index("application-auditor"), calls)
+        ok("strategist called before the first write", strategy_before_writing(name))
 
     pkg_path = os.path.join(d, "package.json")
     ok("package.json written", os.path.exists(pkg_path))
     if not os.path.exists(pkg_path):
         return {"scenario": name, "ok": False, "checks": checks}
-    pkg = json.load(open(pkg_path, encoding="utf-8"))
-    rc, au = script("audit_package.py", pkg_path)
+    with open(pkg_path, encoding="utf-8") as f:
+        pkg = json.load(f)
+    ok("package uses the current contract (meta.schema 2)", pkg.get("meta", {}).get("schema") == 2, pkg.get("meta"))
+    rc, au = script("audit_package.py", pkg_path, "--root", ROOT)  # fixture paths are relative to the project
     ok("audit_package passes", rc == 0, [e["code"] + ": " + e["msg"] for e in au.get("errors", [])])
+    verdicts = os.path.join(d, "audit.json")  # first audit, then the re-audits of changed targets (SKILL.md step 6)
+    rounds = sorted(glob.glob(os.path.join(d, "audit.round*.json")))
+    rc, av = (script("audit_package.py", pkg_path, "--root", ROOT, "--verdicts", verdicts, *rounds)
+              if os.path.exists(verdicts) else (1, {}))
+    ok("application-auditor verdicts cover every target and quote their sources", rc == 0,
+       [e["code"] + ": " + e["msg"] for e in av.get("errors", [])] or "audit.json missing")
     docs = sorted(glob.glob(os.path.join(d, "*.docx")) + glob.glob(os.path.join(d, "*.pdf")))
     ok("DOCX + PDF for CV and letter", len(docs) >= 4, [os.path.basename(x) for x in docs])
     if docs:
@@ -167,8 +245,9 @@ def validate(name):
     ok("dossier.md written", os.path.exists(os.path.join(d, "dossier.md")))
     prof = pkg.get("company_profile") or {}
     ok("company type from the company's own facts", prof.get("type") in COMPANY_TYPES[name], prof)
-    ok("adaptation recorded per lever", len(pkg.get("strategy", {}).get("adaptation") or []) >= 3,
-       [a.get("lever") for a in pkg.get("strategy", {}).get("adaptation") or []])
+    levers = [a.get("lever") for a in pkg.get("strategy", {}).get("adaptation") or []]
+    ok("adaptation recorded per lever", len(levers) == 6 and set(levers) ==
+       {"positioning", "experience", "projects", "keywords", "letter", "register"}, levers)
     sys.path.insert(0, SCRIPTS)
     import check_docs
     cv_pdf = [x for x in docs if x.endswith(".pdf") and re.search(r"(Resume|CV)", os.path.basename(x))]

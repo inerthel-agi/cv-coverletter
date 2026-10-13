@@ -28,9 +28,13 @@ reads in seconds and whose text any parser can extract in the right order.
 ## Files
 - `scripts/build_docs.py` writes DOCX (editable, Arial/Calibri) and PDF (Helvetica = Arial metrics,
   standard PDF font, text extractable). For a pixel-exact Arial PDF, export the DOCX from Word or LibreOffice.
-- `scripts/check_docs.py` verifies: paper vs market, margins, no table/image/text box/hidden text,
+  Text outside the PDF font's character set (WinAnsi: e.g. ł, ő, ș, ≥) is never replaced: the PDF is refused
+  (`pdf_error`) and the DOCX must be exported. `build.json` records what was built from which package content.
+- `scripts/check_docs.py` verifies: paper vs market, margins, no table/image/text box/hidden text
+  (direct properties, document defaults and applicable styles, respecting disabled flags),
   single column, page count (letter = 1, CV ≤ 2 with warning > 1), and that every expected string from the
-  package is present in **two** extractions (own parser + textutil/PDFKit on macOS).
+  package, including rendered labels and headers, is present in **two** extractions
+  (own parser + textutil/PDFKit on macOS). File patterns are expanded by the script, including on Windows.
 - Fill: `build_docs.py` scales font (10–12 pt), line height (CV 1.15–1.30, letter 1.15–1.45) and spacing to
   fill the CV's minimum page count and the letter's single page, keeping 3 % slack so Word stays on the same page count (checked by exporting the DOCX from Word).
   If `fit.warning` says the page is under-filled at the maximum, add evidence-backed content (another project,

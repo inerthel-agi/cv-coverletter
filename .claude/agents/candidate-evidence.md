@@ -19,14 +19,23 @@ authorised (portfolio, public GitHub repos), plus the target role if known. Read
    that list is self-reported evidence, never a gap.
 2. Card fields: context, problem, personal action (separate the candidate's part from the team's),
    tools actually used in this item, stage (`idea|prototype|delivered|deployed|used|measured|coursework|
-   experience|self-reported`), verified result, metrics exactly as stated with their nature
-   (measured / survey / someone's estimate), relevance to the role, source (file#section or URL),
+   experience|self-reported`), verified result, metrics exactly as stated, each one string that names
+   its nature (measured / survey / someone's estimate); never repeat an estimated figure in `facts`, relevance to the role, source (file#section or URL),
    `proves`: qualities the source actually shows (end-to-end ownership, work in a team process, users or
    non-technical colleagues, automation, testing/quality, teaching/written communication, languages).
 3. Distinguish idea, prototype, delivered, deployed, used by others, measured effect. Using an AI assistant
    is not mastery of a technology. Transferable experience counts if it proves a relevant skill.
 4. Public repos: README, languages, commits by the candidate, deployment links. Do not infer usage from stars.
-5. Anything missing (dates, role in team, numbers, level) → a targeted question, not a guess.
+5. `excerpts`: for every fact, number, date and level, copy the supporting words from the source **character for
+   character** (≤ 30 words each, no paraphrase, no ellipsis). `audit_package.py` rejects an excerpt that is not
+   in the file and any number of the card absent from its excerpts.
+    Every excerpt contains meaningful source text, not just markup. Prefer the source ids assigned by the
+    caller (`S30` and up); a direct authorized URL is allowed, but stays remotely unverified without a local copy.
+6. `levels`: only when the source states one (`{"subject": "English", "level": "fluent"}`), level words copied
+   verbatim; never translate, upgrade or infer a level ("used daily" is not "advanced").
+7. Availability card, as stated: start date, contract sought, alternance rhythm, location and mobility.
+8. Anything missing (dates, role in team, numbers, level, availability) → a targeted question that asks for a
+   verifiable fact (link, document, date, who measured), never for an estimate.
 
 ## Output (final message only)
 ```
@@ -36,5 +45,7 @@ authorised (portfolio, public GitHub repos), plus the target role if known. Read
 ### Questions for the candidate (blocking first)
 ### Claims to avoid — things the documents do NOT support
 ### JSON
-{"evidence": [{"id","title","stage","dates","tools","facts","metrics","proves","source"}]}
+{"evidence": [{"id","title","stage","dates","tools":["…"],"facts":["…"],"metrics":["text naming who measured or estimated"],
+               "excerpts":["verbatim"],"levels":[{"subject","level"}],"proves","source"}],
+ "questions": [{"evidence": ["E?"], "ask", "why"}]}
 ```
