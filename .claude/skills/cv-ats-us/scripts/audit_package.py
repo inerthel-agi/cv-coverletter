@@ -44,6 +44,9 @@ LEVEL_MATCH = {"meets", "below", "unknown"}
 CONFIDENCE = {"high", "medium", "low"}
 PLACEMENT = {"cv", "letter", "both", "interview"}
 VERDICTS = {"supported", "partial", "unsupported"}
+# Targets a verdict may judge neutral (nothing to quote): a question that takes no fact for granted, a technical note
+# that only restates the package's own records. Every other target is a statement that quotes its source.
+NEUTRAL_KINDS = {"question", "technical"}
 POSTING_STATUSES = {"open", "closed", "expired", "unverified"}
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 HEDGES = re.compile(r"\b(may|might|could|likely|appears?|seems?|suggests?|if|perhaps|presumably|"
@@ -93,30 +96,43 @@ SIZE_CLICHE = re.compile(r"fast[- ]paced (?:start[- ]?up|environment|company)|we
                          r"leader mondial comme le vôtre|(?:entreprise|structure) à taille humaine", re.I)
 # Level statements. These lists only DETECT a line that states a level; they never decide that two levels are
 # equivalent. Language levels must be anchored in leveled evidence; meaning is judged by application-auditor.
-LANGUAGE_LEVEL = re.compile(r"\b(?:native|fluent|bilingual|langue maternelle|natif|native|courant|bilingue)\b", re.I)
+LANGUAGE_LEVEL = re.compile(r"\b(?:native|fluent|bilingual|langue maternelle|natif|native|(?<!\bau )courant|bilingue)\b",
+                            re.I)  # "au courant" (informed) is never a level
 LANGUAGE_NAME = re.compile(r"\b(?:english|french|spanish|german|italian|portuguese|arabic|chinese|mandarin|japanese|"
                            r"russian|dutch|anglais|français|francais|espagnol|allemand|italien|portugais|arabe|"
                            r"chinois|japonais|russe|néerlandais)\b", re.I)
 SKILL_LEVEL = re.compile(r"\b(?:expert|experte|expertise|advanced|proficient|proficiency|intermediate|beginner|"
                          r"conversational|working knowledge|maîtrise|avancé|intermédiaire|débutant|notions)\b", re.I)
 CEFR = re.compile(r"(?<![\w])([ABC][12])(?![\w])")
+LEVEL_CONTEXT = re.compile(LANGUAGE_NAME.pattern + r"|\b(?:CEFR|CECRL|level|niveau)\b", re.I)
 NEED_IDS = re.compile(r"\b([CRK])(\d+)(?:\s*-\s*\1?(\d+))?\b")
 NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
                 "ten": 10, "eleven": 11, "twelve": 12, "un": 1, "une": 1, "deux": 2, "trois": 3, "quatre": 4,
                 "cinq": 5, "six": 6, "sept": 7, "huit": 8, "neuf": 9, "dix": 10, "onze": 11, "douze": 12}
 HORIZON = re.compile(r"\b(\d+|%s)\s+(?:[\w’'-]+\s+)?(weeks?|semaines?|months?|mois|years?|ans?|années?)\b"
                      % "|".join(NUMBER_WORDS), re.I)
-# Calendar dates ("October 2, 2026", "Le 2 octobre 2026", "2026-10-02", "02/10/2026"): their day and month are
-# not figures, so a letter date never reads as the "2 hours" of an estimate. Removed before figures are compared.
+# Calendar dates and ISO 8601 date-times ("October 2, 2026", "Le 2 octobre 2026", "02/10/2026", "2026-10-02",
+# "2026-10-02T10:00+02:00"): their day, month, hour and zone are not figures, so a date never reads as the
+# "2 hours" of an estimate. Removed before figures are compared.
 MONTH = (r"(?:jan(?:uary|vier|v)?|feb(?:ruary)?|f[ée]v(?:rier|r)?|mar(?:ch|s)?|apr(?:il)?|avr(?:il)?|may|mai|"
          r"june?|juin|july?|juil(?:let)?|aug(?:ust)?|ao[uû]t|sep(?:t(?:ember|embre)?)?|oct(?:ober|obre)?|"
          r"nov(?:ember|embre)?|d[ée]c(?:ember|embre)?)")
-DATE_TEXT = re.compile(r"\b\d{4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}[/.]\d{1,2}[/.]\d{4}\b|"
+DATE_TEXT = re.compile(r"\b\d{4}-\d{1,2}-\d{1,2}(?:[T ]\d{1,2}:\d{2}(?::\d{2}(?:[.,]\d+)?)?"
+                       r"(?:Z|[+-]\d{2}(?::?\d{2})?)?)?\b|\b\d{1,2}[/.]\d{1,2}[/.]\d{4}\b|"
                        r"\b%s\.?\s+\d{1,2}(?:st|nd|rd|th)?\b(?:,?\s+\d{4}\b)?|"
                        r"\b\d{1,2}(?:st|nd|rd|th|er)?\s+(?:of\s+)?%s\b\.?(?:,?\s+\d{4}\b)?" % (MONTH, MONTH), re.I)
 LETTER_MAX_WORDS = 300
 NUM = re.compile(r"\d+(?:[.,]\d+)?")
 YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+
+
+def level_words(text, ids=()):
+    """(language level, skill level word, CEFR codes) a text states. In dossier text, a CEFR-like code that is also
+    one of the package's ids (claim C2) is a level only next to a language name or a level word."""
+    near = lambda m: text[max(0, m.start() - 40):m.end() + 40]
+    lang = next((m for m in LANGUAGE_LEVEL.finditer(text) if LANGUAGE_NAME.search(near(m))), None)  # "courant"
+    cefr = [m.group(1) for m in CEFR.finditer(text) if m.group(1) not in ids or LEVEL_CONTEXT.search(near(m))]
+    return lang, SKILL_LEVEL.search(text), cefr
 
 
 def term_in(term, text):
@@ -186,11 +202,11 @@ TEXT_FIELDS = {"id", "title", "text", "heading", "subheading", "label", "locatio
                "mode", "status", "lever", "choice", "problem", "risk", "scope", "item", "posting", "candidate",
                "ask", "why", "note", "level", "level_required", "level_match", "confidence", "placement", "field",
                "contract_override", "font", "paper", "unit", "research_level", "retrieved_via", "copy_path", "url",
-               "company", "role", "start", "rhythm", "remote", "question", "talking_points",
+               "company", "role", "start", "rhythm", "remote", "question", "talking_points", "answer",
                "accessed", "published", "value_proposition", "differentiation", "recipient_source", "posting_status"}
 TEXT_LISTS = {"facts", "metrics", "excerpts", "tools", "contact", "recipient", "warnings", "gaps", "language_basis"}
 NULLABLE_TEXT = {"dates", "location", "source", "level_required", "level_match", "unit", "recipient_source",
-                 "contract_override", "note", "copy_path", "start", "rhythm", "remote"}
+                 "contract_override", "note", "copy_path", "start", "rhythm", "remote", "answer"}
 
 
 def structure_errors(p):
@@ -249,6 +265,8 @@ def verdict_structure_errors(data):
         for field in ("fingerprint", "verdict", "source", "excerpt", "note"):
             if field in v and not isinstance(v[field], str):
                 errors.append("verdicts[%d].%s must be text" % (i, field))
+        if "neutral" in v and type(v["neutral"]) is not bool:
+            errors.append("verdicts[%d].neutral must be true or false" % i)
     return errors
 
 
@@ -628,16 +646,19 @@ class Audit:
                      % (where, sorted(extra), list(ev_ids)))
 
     def cv_lines(self):
+        """CV lines named by their position (cv.sections[1].items[0].bullets[2]): two sections with the same title,
+        or a title with brackets, never share a target name."""
         cv = self.p["cv"]
         for si, sec in enumerate(cv.get("sections", [])):
             for ii, it in enumerate(sec.get("items", [])):
+                where = "cv.sections[%d].items[%d]" % (si, ii)
                 if it.get("heading"):
                     for bi, b in enumerate(it.get("bullets", [])):
-                        yield "cv.%s[%d].bullets[%d]" % (sec.get("title"), ii, bi), b.get("text", ""), b.get("evidence")
+                        yield "%s.bullets[%d]" % (where, bi), b.get("text", ""), b.get("evidence")
                 else:
                     label = it.get("label")
                     text = (label + ": " if label else "") + it.get("text", "")
-                    yield "cv.%s[%d]" % (sec.get("title"), ii), text, it.get("evidence")
+                    yield where, text, it.get("evidence")
 
     @staticmethod
     def section_refs(sec):
@@ -651,14 +672,14 @@ class Audit:
 
     def cv_items(self):
         """Heading items (organisation, title, degree, dates) with the evidence cited by the item or its bullets."""
-        for sec in self.p["cv"].get("sections", []):
+        for si, sec in enumerate(self.p["cv"].get("sections", [])):
             for ii, it in enumerate(sec.get("items", [])):
                 if it.get("heading"):
                     refs = list(it.get("evidence") or [])
                     refs += [r for b in it.get("bullets", []) for r in (b.get("evidence") or []) if r not in refs]
                     text = " | ".join(x for x in (it.get("heading"), it.get("subheading"), it.get("location"),
                                                   it.get("dates")) if x)
-                    yield "cv.%s[%d]" % (sec.get("title"), ii), it, text, refs
+                    yield "cv.sections[%d].items[%d]" % (si, ii), it, text, refs
 
     def check_cv(self):
         cv = self.p["cv"]
@@ -837,18 +858,42 @@ class Audit:
         for i, para in enumerate((self.p.get("letter") or {}).get("paragraphs", [])):
             yield "letter.paragraphs[%d]" % i, para.get("text", ""), para.get("evidence") or []
 
+    def dossier_notes(self):
+        """(target, text) of the dossier statements outside the documents: questions and the candidate's answers,
+        requirement notes, warnings and the contract decision."""
+        for i, q in enumerate(self.p.get("questions") or []):
+            for key in ("ask", "why", "answer"):
+                if q.get(key):
+                    yield "questions[%d].%s" % (i, key), q[key]
+        if self.targeted:
+            for rid, req in self.reqs.items():
+                if req.get("note"):
+                    yield "job.requirement:%s.note" % rid, req["note"]
+        for i, warning in enumerate(self.p["meta"].get("warnings") or []):
+            yield "meta.warnings[%d]" % i, warning
+        if self.p["meta"].get("contract_override"):
+            yield "meta.contract_override", self.p["meta"]["contract_override"]
+
     def check_levels(self):
-        """A stated level (language, CEFR, skill adjective) must cite evidence whose own levels are anchored in the
-        candidate's documents. Whether 'bilingue' fits a source saying 'fluent' is a meaning question: these lines
-        become level targets for application-auditor, never decided by a word list."""
+        """A level the candidate states (CV, letter, interview talking points) must cite evidence whose own levels
+        are anchored in the candidate's documents. Whether 'bilingue' fits a source saying 'fluent' is a meaning
+        question: these lines become level targets for application-auditor, never decided by a word list. A level
+        an interview question asks about, or a dossier note mentions, is a level target only."""
         self.level_lines = set()
-        for where, text, refs in self.doc_lines():
-            lang = next((m for m in LANGUAGE_LEVEL.finditer(text)  # "courant" only next to a language name
-                         if LANGUAGE_NAME.search(text[max(0, m.start() - 40):m.end() + 40])), None)
-            skill, cefr = SKILL_LEVEL.search(text), CEFR.findall(text)
+        ids = set(self.src) | set(self.claims) | set(self.reqs) | set(self.ev) | set(self.fit)
+        lines = [(where, text, refs, True, ()) for where, text, refs in self.doc_lines()]
+        for i, q in enumerate(self.p.get("interview") or []):
+            refs = q.get("evidence") or []
+            lines += [("interview[%d]" % i, q.get("talking_points", ""), refs, True, ids),
+                      ("interview[%d]" % i, q.get("question", ""), refs, False, ids)]
+        lines += [(where, text, [], False, ids) for where, text in self.dossier_notes()]
+        for where, text, refs, stated, known in lines:
+            lang, skill, cefr = level_words(text, known)
             if not (lang or skill or cefr):
                 continue
             self.level_lines.add(where)
+            if not stated:  # asked or noted, not stated as the candidate's level: the auditor compares it
+                continue
             leveled = [lv for r in refs or list(self.ev) for lv in self.ev.get(r, {}).get("levels") or []]
             if (lang or cefr) and not leveled:
                 self.req("E_LEVEL_UNSUPPORTED", "%s states a level (%r) but cites no evidence with recorded levels"
@@ -1144,6 +1189,18 @@ class Audit:
                 out.add(job_source)  # a requirement is quoted from the posting
             return sorted(x for x in out if x)
 
+        def refs_of(basis, ev=()):
+            """(evidence, claims, requirements, sources) of a derived statement: its basis ids, the contract rows
+            they name (with their own basis) and the evidence matched to the requirements they name."""
+            ids = set(basis)
+            for fid in ids & set(self.fit):
+                ids.update(self.fit[fid].get("basis") or [])
+            claims, reqs = sorted(ids & set(self.claims)), sorted(ids & set(self.reqs))
+            evidence = set(ev) | (ids & set(self.ev))
+            for rid in reqs:
+                evidence.update(self.reqs[rid].get("match") or [])
+            return sorted(evidence), claims, reqs, sorted(set(srcs(sorted(evidence), claims, reqs)) | (ids & set(self.src)))
+
         cand = sorted({str(e.get("source", "")).split("#")[0] for e in self.p["evidence"] if e.get("source")})
         out = []
 
@@ -1203,6 +1260,28 @@ class Audit:
         if strategy.get("differentiation"):
             live = sorted(c for c, claim in self.claims.items() if claim.get("status") != "unavailable")
             add("strategy.differentiation", strategy["differentiation"], all_ev, live, all_reqs, context=notes)
+        # Dossier questions: a question is judged for what it takes for granted, its rationale is an assessment, and
+        # a candidate's reply is quoted from the copy saved as a candidate source (same names as dossier_notes()).
+        replies = sorted(set(cand) | {s for s, x in self.src.items() if x.get("kind") == "candidate"})
+        for i, q in enumerate(self.p.get("questions") or []):
+            ev, claims, reqs, sources = refs_of(q.get("need") or [], q.get("evidence") or [])
+            if q.get("ask"):
+                add("questions[%d].ask" % i, q["ask"], ev, claims, reqs, sources, context={"kind": "question"})
+            if q.get("why"):
+                add("questions[%d].why" % i, q["why"], ev, claims, reqs, sources, context=notes)
+            if q.get("answer"):
+                add("questions[%d].answer" % i, q["answer"], ev, claims, reqs, sorted(set(sources) | set(replies)),
+                    context={"kind": "candidate-reply", "question": q.get("ask")})
+        meta = self.p["meta"]
+        for i, warning in enumerate(meta.get("warnings") or []):  # restates the source states and research level
+            add("meta.warnings[%d]" % i, warning, (), sorted(self.claims), (), sorted(self.src),
+                context={"kind": "technical", "research_level": meta.get("research_level"),
+                         "posting_status": (self.p.get("job") or {}).get("posting_status")})
+        if meta.get("contract_override"):
+            add("meta.contract_override", meta["contract_override"],
+                sources=sorted(set(replies) | ({job_source} if job_source else set())),
+                context={"kind": "candidate-reply", "incompatible": [k for k in strategy.get("contract_fit") or []
+                                                                     if k.get("status") == "incompatible"]})
         if self.targeted:
             job = self.p.get("job") or {}
             if job.get("posting_status") != "unverified" and job_source:
@@ -1215,27 +1294,24 @@ class Audit:
             for rid, req in self.reqs.items():
                 stated = {k: req.get(k) for k in ("text", "level", "level_required") if req.get(k)}
                 add("job.requirement:%s" % rid, json.dumps(stated, sort_keys=True, ensure_ascii=False), reqs=[rid])
+                if req.get("note"):  # the strategist's reading of the requirement against the matched evidence
+                    add("job.requirement:%s.note" % rid, req["note"], *refs_of([rid]), context=notes)
 
             def assessment(target, value, basis, ev=()):
                 """Derived strategy may use both the posting needs and the evidence matched to them."""
-                ids = set(basis)
-                for fid in ids & set(self.fit):
-                    ids.update(self.fit[fid].get("basis") or [])
-                claims, reqs = sorted(ids & set(self.claims)), sorted(ids & set(self.reqs))
-                evidence = set(ev) | (ids & set(self.ev))
-                for rid in reqs:
-                    evidence.update(self.reqs[rid].get("match") or [])
-                sources = sorted(set(srcs(sorted(evidence), claims, reqs)) | (ids & set(self.src)))
+                evidence, claims, reqs, sources = refs_of(basis, ev)
                 if target.startswith("strategy.contract_fit["):
                     sources = sorted(set(sources) | set(cand))
-                add(target, json.dumps(value, sort_keys=True, ensure_ascii=False), sorted(evidence), claims, reqs,
-                    sources, context={"kind": "assessment", "company": self.p["meta"].get("company"),
-                                      "role": self.p["meta"].get("role")})
+                add(target, json.dumps(value, sort_keys=True, ensure_ascii=False), evidence, claims, reqs, sources,
+                    context=notes)
 
             profile = self.p.get("company_profile")
-            if profile and (profile.get("basis") or profile.get("hiring_triggers")):
-                assessment("company_profile", profile,
-                           list(profile.get("basis") or []) + list(profile.get("hiring_triggers") or []))
+            basis = list(profile.get("basis") or []) + list(profile.get("hiring_triggers") or []) if profile else []
+            if basis:
+                assessment("company_profile", profile, basis)
+            elif profile and (profile.get("unit") or profile.get("note")):  # cites no claim: a technical note
+                add("company_profile", json.dumps(profile, sort_keys=True, ensure_ascii=False),
+                    sources=[job_source] if job_source else [], context={"kind": "technical"})
             strategy = self.p.get("strategy") or {}
             for key in ("hiring_context", "contribution"):
                 if strategy.get(key):
@@ -1271,26 +1347,34 @@ class Audit:
                 self.err("E_VERDICT_REJECTED", "%s judged %s by application-auditor: %s"
                          % (t["target"], v["verdict"], v.get("note", "")))
                 continue
-            sid = str(v.get("source", "")).split("#")[0]
-            if not t["sources"]:
-                self.err("E_VERDICT_SOURCE", "%s: the statement cites no evidence, claim or requirement, so no source "
-                                             "may support it" % t["target"])
-                continue
-            if sid not in t["sources"]:
-                self.err("E_VERDICT_SOURCE", "%s: verdict quotes %s, not one of its sources %s" % (t["target"], sid, t["sources"]))
-                continue
-            excerpt = str(v.get("excerpt", "")).strip()
-            state, text, where = self.source_state(sid)
-            if not norm(excerpt):
-                self.err("E_VERDICT_EXCERPT", "%s: supported verdict without meaningful source text" % t["target"])
-            elif state == "missing":
-                self.err("E_SOURCE_MISSING", "%s: local source %s does not exist" % (t["target"], where))
-            elif state == "ok" and norm(excerpt) in norm(text):
-                pass
-            elif state == "ok":
-                self.err("E_VERDICT_EXCERPT", "%s: excerpt not found verbatim in %s: %r" % (t["target"], sid, excerpt[:80]))
-            else:  # remote page, unreadable file, partly readable PDF: the quotation could not be checked
-                unchecked.append("%s (%s %s)" % (t["target"], state, where))
+            if v.get("neutral") is True:  # nothing to quote: only a question or a technical note may be neutral
+                if t["context"].get("kind") not in NEUTRAL_KINDS:
+                    self.err("E_VERDICT_SOURCE", "%s: only a question or a technical note can be judged neutral; quote "
+                                                 "the source that supports this statement" % t["target"])
+                    continue
+            else:
+                sid = str(v.get("source", "")).split("#")[0]
+                if not t["sources"]:
+                    self.err("E_VERDICT_SOURCE", "%s: the statement cites no evidence, claim or requirement, so no "
+                                                 "source may support it" % t["target"])
+                    continue
+                if sid not in t["sources"]:
+                    self.err("E_VERDICT_SOURCE", "%s: verdict quotes %s, not one of its sources %s"
+                             % (t["target"], sid, t["sources"]))
+                    continue
+                excerpt = str(v.get("excerpt", "")).strip()
+                state, text, where = self.source_state(sid)
+                if not norm(excerpt):
+                    self.err("E_VERDICT_EXCERPT", "%s: supported verdict without meaningful source text" % t["target"])
+                elif state == "missing":
+                    self.err("E_SOURCE_MISSING", "%s: local source %s does not exist" % (t["target"], where))
+                elif state == "ok" and norm(excerpt) in norm(text):
+                    pass
+                elif state == "ok":
+                    self.err("E_VERDICT_EXCERPT", "%s: excerpt not found verbatim in %s: %r"
+                             % (t["target"], sid, excerpt[:80]))
+                else:  # remote page, unreadable file, partly readable PDF: the quotation could not be checked
+                    unchecked.append("%s (%s %s)" % (t["target"], state, where))
             if t["level"] and v.get("level_checked") is not True:
                 self.err("E_VERDICT_LEVEL", "%s states a level: the verdict must compare it with the source level "
                                             "(level_checked: true)" % t["target"])

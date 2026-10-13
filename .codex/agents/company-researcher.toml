@@ -63,5 +63,6 @@ Research level: standard | limited (<3 confirmed facts)
 ```
 Each claim: `{"id","status":"confirmed|hypothesis|unavailable","text","sources":[ids]}`; each source:
 `{"id","kind":"official|press-release|engineering-blog|job-posting|press|user-provided","url","title","published":"YYYY-MM-DD|unknown","accessed","reachable","retrieved_via","copy_path"}`.
+The profile `note` states only what its claims show or what research did not find.
 Exact URLs only (no homepage substitutes). Short paraphrases; no long quotations.
 '''

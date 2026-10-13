@@ -1,15 +1,19 @@
-"""Offline regressions: the eighteen findings of the read-only review (tests 1-18), then the six defects of the
-final pre-commit review (tests 19-24). Each test failed on the code before its fix."""
+"""Offline regressions: the eighteen findings of the read-only review (tests 1-18), the six defects of the final
+pre-commit review (tests 19-24), then the five defects left after it (tests 25-30). Each test failed on the code
+before its fix."""
 import copy
+import gc
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from unittest import mock
+import warnings
 import zipfile
 import zlib
 
@@ -483,6 +487,208 @@ class ReviewRegressionTests(unittest.TestCase):
                     checked = run_e2e.validate("brindlewood")
                 row = next(c for c in checked["checks"] if c["check"].startswith("application-auditor verdicts"))
                 self.assertIs(row["ok"], expected, row["detail"])
+
+    @staticmethod
+    def requirement(p, rid):
+        return next(r for r in p["job"]["requirements"] if r["id"] == rid)
+
+    def test_25_dossier_fields_are_audit_targets(self):
+        targets = {t["target"]: t for t in self.audit(self.package()).targets()}
+        expected = {"questions[0].ask": "question", "questions[0].why": "assessment", "questions[1].ask": "question",
+                    "questions[1].why": "assessment", "job.requirement:R7.note": "assessment"}
+        self.assertEqual(sorted(set(expected) - set(targets)), [])
+        self.assertEqual({name: targets[name]["context"].get("kind") for name in expected}, expected)
+        # what each statement may quote: the posting and the cards its needs and evidence ids name
+        self.assertEqual(targets["questions[0].why"]["sources"], ["S4", "S6"])
+        self.assertEqual(targets["questions[1].ask"]["sources"], ["S4", "S5"])
+        self.assertEqual(targets["job.requirement:R7.note"]["sources"], ["S4", "S6"])
+        edits = {  # an edit of a judged statement, or of what it rests on, makes its verdict stale
+            "questions[1].ask": lambda p: p["questions"][1].update(
+                ask="Since you led the engineering department at Northbridge, can you start in January 2027?"),
+            "questions[0].why": lambda p: p["questions"][0].update(
+                why="You already hold the Certified Kubernetes Administrator certification, so R5 is met."),
+            "job.requirement:R7.note": lambda p: self.requirement(p, "R7").update(
+                note="Built GIS dashboards in QGIS for the city."),
+            "questions[0].ask": lambda p: p["questions"][0].update(need=["R5", "R6"]),
+        }
+        for target, edit in edits.items():
+            with self.subTest(edited=target):
+                p = self.package()
+                edit(p)
+                au = self.audit(p, self.verdicts())
+                self.assertTrue(self.located(au, "E_VERDICT_STALE", target + ":"), au.errors)
+        added = {  # new dossier text is a new target, which needs its own verdict
+            "meta.warnings[0]": lambda p: p["meta"]["warnings"].append(
+                "Posting closed on 2026-10-01 after the candidate's first interview."),
+            "questions[0].answer": lambda p: p["questions"][0].update(
+                answer="Yes: I hold the Certified Kubernetes Administrator certification."),
+            "meta.contract_override": lambda p: p["meta"].update(
+                contract_override="The candidate already signed an offer with Brindlewood."),
+        }
+        for target, edit in added.items():
+            with self.subTest(added=target):
+                p = self.package()
+                edit(p)
+                au = self.audit(p, self.verdicts())
+                self.assertTrue(self.located(au, "E_VERDICT_COVERAGE", target), au.errors)
+        p = self.package()  # a profile that cites no claim is still judged: a technical note, the posting quotable
+        p["company_profile"] = {"type": "unknown", "basis": [], "unit": "Routing team", "hiring_triggers": [],
+                                "note": "Brindlewood employs 9000 engineers in 12 countries."}
+        au = self.audit(p)
+        self.assertEqual(au.errors, [])
+        profile = {t["target"]: t for t in au.targets()}["company_profile"]
+        self.assertEqual((profile["context"].get("kind"), profile["sources"]), ("technical", ["S4"]))
+
+    def test_26_dossier_treatments_neutral_questions_and_sourced_statements(self):
+        targets = {t["target"]: t for t in self.audit(self.package()).targets()}
+        self.assertEqual(targets.get("questions[0].ask", {}).get("context", {}).get("kind"), "question")
+        reference = {v["target"]: v for v in self.verdicts()["verdicts"]}
+        # the reference judged the first question neutral: it takes no fact for granted, so it quotes nothing
+        self.assertIs(reference["questions[0].ask"].get("neutral"), True)
+        self.assertNotIn("excerpt", reference["questions[0].ask"])
+        self.assertEqual(self.audit(self.package(), self.verdicts()).errors, [])
+        for target in ("questions[0].why", "job.requirement:R7.note", "claim:C1", "cv.headline", "interview[0]"):
+            with self.subTest(neutral=target):  # a statement cannot be judged neutral: it quotes its source
+                v = self.verdicts()
+                row = next(x for x in v["verdicts"] if x["target"] == target)
+                row["neutral"] = True
+                row.pop("source", None)
+                row.pop("excerpt", None)
+                self.assertTrue(self.located(self.audit(self.package(), v), "E_VERDICT_SOURCE", target + ":"))
+        v = self.verdicts()  # a premise is quoted from the question's own sources only
+        next(x for x in v["verdicts"] if x["target"] == "questions[1].ask").update(
+            source="S1", excerpt="Brindlewood Freight Labs")
+        self.assertTrue(self.located(self.audit(self.package(), v), "E_VERDICT_SOURCE", "questions[1].ask:"))
+        p = self.package()  # a warning is technical: neutral when it only restates the package's records
+        p["meta"]["warnings"].append("Company pages were read from local snapshots dated 2026-10-08.")
+        warning = {t["target"]: t for t in self.audit(p).targets()}["meta.warnings[0]"]
+        self.assertEqual(warning["context"].get("kind"), "technical")
+        v = self.verdicts()
+        v["verdicts"].append({"target": "meta.warnings[0]", "fingerprint": warning["fingerprint"],
+                              "verdict": "supported", "neutral": True})
+        self.assertEqual(self.audit(p, v).errors, [])
+        p["meta"]["research_level"] = "limited"  # the records a warning restates are part of its fingerprint
+        self.assertTrue(self.located(self.audit(p, v), "E_VERDICT_STALE", "meta.warnings[0]:"))
+        p = self.package()  # a candidate reply is quoted from a candidate source, never judged neutral
+        p["questions"][1]["answer"] = "Yes, from January 2027."
+        reply = {t["target"]: t for t in self.audit(p).targets()}["questions[1].answer"]
+        self.assertEqual(reply["context"].get("kind"), "candidate-reply")
+        self.assertEqual((("S5" in reply["sources"]), ("S1" in reply["sources"])), (True, False))
+        v = self.verdicts()
+        v["verdicts"].append({"target": "questions[1].answer", "fingerprint": reply["fingerprint"],
+                              "verdict": "supported", "neutral": True})
+        self.assertTrue(self.located(self.audit(p, v), "E_VERDICT_SOURCE", "questions[1].answer:"))
+        v = self.verdicts()  # neutral is a boolean
+        next(x for x in v["verdicts"] if x["target"] == "questions[0].ask")["neutral"] = "true"
+        self.assertTrue(self.located(self.audit(self.package(), v), "E_STRUCTURE", "neutral"))
+        package = self.write("package.json", self.package())  # conflicts on a dossier target, both file orders
+        first = self.write("audit.json", self.verdicts())
+        rejected = dict(reference["questions[0].ask"], verdict="unsupported", note="FICTITIOUS conflicting round")
+        second = self.write("audit.round1.json", {"verdicts": [rejected]})
+        for files in ((first, second), (second, first)):
+            with self.subTest(files=[f.name for f in files]):
+                r = self.run_script("audit_package.py", package, "--root", ROOT, "--verdicts", *files)
+                self.assertEqual(r.returncode, 1)
+                self.assertIn("E_VERDICT_CONFLICT", {e["code"] for e in json.loads(r.stdout)["errors"]})
+
+    def test_27_interview_levels_are_detected_and_checked(self):
+        p = self.package()  # a level the candidate states rests on leveled evidence: E1 records none
+        p["interview"][0]["talking_points"] += " I also speak fluent German."
+        au = self.audit(p)
+        self.assertTrue(self.located(au, "E_LEVEL_UNSUPPORTED", "interview[0]"), au.errors)
+        self.assertTrue({t["target"]: t for t in au.targets()}["interview[0]"]["level"])
+        p = self.package()  # with the languages card cited, the auditor still compares the wording
+        p["interview"][0]["talking_points"] += " I speak French (native) and English (fluent)."
+        p["interview"][0]["evidence"] = ["E1", "E7"]
+        au = self.audit(p)
+        self.assertEqual(au.errors, [])
+        target = {t["target"]: t for t in au.targets()}["interview[0]"]
+        verdict = {"target": "interview[0]", "fingerprint": target["fingerprint"], "verdict": "supported",
+                   "source": "S5", "excerpt": "French (native), English (fluent)."}
+        others = [v for v in self.verdicts()["verdicts"] if v["target"] != "interview[0]"]
+        au = self.audit(p, {"verdicts": others + [verdict]})
+        self.assertTrue(self.located(au, "E_VERDICT_LEVEL", "interview[0]"), au.errors)
+        self.assertEqual(self.audit(p, {"verdicts": others + [dict(verdict, level_checked=True)]}).errors, [])
+        p = self.package()  # a CEFR code above what the evidence records
+        p["interview"][1]["talking_points"] += " My English is C1."
+        p["interview"][1]["evidence"] = ["E1", "E7"]
+        self.assertTrue(self.located(self.audit(p), "E_LEVEL_UNSUPPORTED", "interview[1] states CEFR C1"))
+        p = self.package()  # a level the question asks about is compared by the auditor, not refused
+        p["interview"][1]["question"] = "How fluent is your German, and where did you use it?"
+        au = self.audit(p)
+        self.assertEqual(au.errors, [])
+        self.assertTrue({t["target"]: t for t in au.targets()}["interview[1]"]["level"])
+        p = self.package()  # words that do not describe the candidate's level are no level error
+        p["interview"][0]["question"] = "How would you explain the batching heuristic to a non-expert?"
+        p["interview"][0]["talking_points"] = "The posting asks for advanced routing work; native mobile apps are out."
+        self.assertEqual(self.audit(p).errors, [])
+        q = self.package_named("quarrelane")
+        q["interview"][0]["talking_points"] += " Je me tiens au courant de la documentation de l'équipe en anglais."
+        q["letter"]["paragraphs"][2]["text"] += " Je me tiens au courant de l'actualité en anglais."
+        au = self.audit(q)
+        self.assertEqual(au.errors, [])
+        self.assertFalse({"interview[0]", "letter.paragraphs[2]"} & au.level_lines)
+        # a claim id is not a CEFR level; the same code next to a language is one
+        targets = {t["target"]: t for t in au.targets()}
+        self.assertIn("C2 n'est qu'une hypothèse", targets["questions[1].why"]["text"])
+        self.assertFalse(targets["questions[1].why"]["level"])
+        q["questions"][1]["why"] += " Niveau d'anglais visé : C1."
+        self.assertTrue({t["target"]: t for t in self.audit(q).targets()}["questions[1].why"]["level"])
+
+    def package_named(self, name):
+        return json.loads((ROOT / "tests/fixtures/packages" / (name + ".json")).read_text(encoding="utf-8"))
+
+    def test_28_cv_targets_have_structural_unambiguous_names(self):
+        original = {t["target"]: t for t in self.audit(self.package()).targets()}
+        reference = {v["target"]: v for v in self.verdicts()["verdicts"]}
+        p = self.package()  # two sections with the same title
+        p["cv"]["sections"].insert(2, {"title": "Projects", "items": [p["cv"]["sections"][1]["items"].pop(1)]})
+        au = self.audit(p)
+        self.assertEqual(au.errors, [])
+        names = [t["target"] for t in au.targets()]
+        self.assertEqual(sorted({n for n in names if names.count(n) > 1}), [])
+        cv_names = [n for n in names if n.startswith("cv.") and n not in ("cv.identity", "cv.headline")]
+        self.assertEqual([n for n in cv_names if not re.fullmatch(
+            r"cv\.sections\[\d+\]\.(?:title|items\[\d+\](?:\.bullets\[\d+\])?)", n)], [])
+        # each element is judged on its own: the reference quotation of the same statement, its own fingerprint
+        quote = {(t["text"], tuple(t["sources"])): reference[name] for name, t in original.items()}
+        mine = {"verdicts": [dict(quote[(t["text"], tuple(t["sources"]))], target=t["target"],
+                                  fingerprint=t["fingerprint"]) for t in au.targets()]}
+        self.assertEqual(self.audit(p, mine).errors, [])
+        rows = {v["target"]: v for v in mine["verdicts"]}  # a verdict never moves to another element
+        moved = dict(rows["cv.sections[2].items[0]"], target="cv.sections[1].items[0]")
+        swapped = {"verdicts": [moved if v["target"] == "cv.sections[1].items[0]" else v for v in mine["verdicts"]]}
+        self.assertTrue(self.located(self.audit(p, swapped), "E_VERDICT_STALE", "cv.sections[1].items[0]:"))
+        p["cv"]["sections"][1], p["cv"]["sections"][2] = p["cv"]["sections"][2], p["cv"]["sections"][1]
+        shifted = [t for t in self.audit(p).targets() if t["target"].startswith(("cv.sections[1].", "cv.sections[2]."))]
+        self.assertTrue(shifted)  # after the reorder, no earlier verdict fits an element now at those paths
+        self.assertEqual([t["target"] for t in shifted
+                          if rows.get(t["target"], {}).get("fingerprint") == t["fingerprint"]], [])
+        self.assertTrue(self.located(self.audit(p, mine), "E_VERDICT_STALE", "cv.sections[1].items[0]:"))
+
+    def test_29_iso_date_times_are_not_estimated_figures(self):
+        # E1: survey "about 25 minutes to about 10 minutes"; E4: estimate "about 2 hours"
+        for stamp in ("2026-10-02T10:00", "2026-10-02T10:00:00Z", "2026-10-02T10:00+02:00",
+                      "2026-10-02T10:25:10.5-02:00", "2026-10-02 10:00"):
+            with self.subTest(stamp=stamp):
+                p = self.package()
+                p["letter"]["date"] = stamp
+                self.assertEqual(self.audit(p).errors, [])
+        p = self.package()  # a real estimate in the same text stays detected, even with the stamp's own digits
+        p["letter"]["subject"] = "Application sent 2026-10-02T10:00: planning now takes 10 minutes per shift"
+        self.assertTrue(self.located(self.audit(p), "E_ESTIMATE_AS_MEASURE", "letter.header states ['10']"))
+        p = self.package()
+        p["letter"]["paragraphs"][2]["text"] += " On 2026-10-02T10:25 the script still saved 2 hours of staff time."
+        self.assertTrue(self.located(self.audit(p), "E_ESTIMATE_AS_MEASURE", "letter.paragraphs[2] states ['2']"))
+
+    def test_30_e2e_allowed_numbers_closes_its_files(self):
+        import run_e2e
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", ResourceWarning)
+            numbers = run_e2e.allowed_numbers("tests/fixtures/candidate/*.md")
+            gc.collect()
+        self.assertIn("2026", numbers)  # the helper still reads the fixture files
+        self.assertEqual([str(w.message) for w in caught if issubclass(w.category, ResourceWarning)], [])
 
 
 if __name__ == "__main__":

@@ -116,7 +116,8 @@ def allowed_numbers(*patterns):
     nums = set()
     for pat in patterns:
         for p in glob.glob(os.path.join(ROOT, pat), recursive=True):
-            nums |= set(re.findall(r"\d+", open(p, encoding="utf-8").read()))
+            with open(p, encoding="utf-8") as f:
+                nums |= set(re.findall(r"\d+", f.read()))
     today = datetime.date.today()
     return nums | {str(today.year), str(today.day), "%02d" % today.day, str(today.month), "1", "2"}
 

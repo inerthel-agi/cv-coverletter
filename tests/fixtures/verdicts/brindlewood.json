@@ -23,113 +23,113 @@
       "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
     },
     {
-      "target": "cv.Education[0]",
-      "fingerprint": "7f2101efdd68f558",
+      "target": "cv.sections[0].items[0]",
+      "fingerprint": "ce25503561f33c98",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Northbridge State University, Columbus, OH — B.S. Computer Science, Aug 2022 – May 2026 (degree awarded May 2026)"
     },
     {
-      "target": "cv.Projects[0]",
-      "fingerprint": "4eeefca85d4516e1",
+      "target": "cv.sections[1].items[0]",
+      "fingerprint": "344e46ce092d9cfb",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "Dates: Jan 2026 – Apr 2026. Capstone, team of 3. Status: used in a pilot."
     },
     {
-      "target": "cv.Projects[1]",
-      "fingerprint": "18bb7494696a1b3f",
+      "target": "cv.sections[1].items[1]",
+      "fingerprint": "8cdd217fb13cdeda",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
     },
     {
-      "target": "cv.Experience[0]",
-      "fingerprint": "45809195d25b7086",
+      "target": "cv.sections[2].items[0]",
+      "fingerprint": "f4a984a3f33bea1a",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "IT Support Assistant (part-time) — Northbridge Public Library, Columbus, OH — Sep 2023 – May 2026"
     },
     {
-      "target": "cv.Experience[1]",
-      "fingerprint": "2b91c3fefe0ea986",
+      "target": "cv.sections[2].items[1]",
+      "fingerprint": "b232ef13640a8f73",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Teaching Assistant, Introduction to Databases — Northbridge State University — Jan 2025 – May 2025"
     },
     {
-      "target": "cv.Education[0].bullets[0]",
-      "fingerprint": "94e6978e9909ec81",
+      "target": "cv.sections[0].items[0].bullets[0]",
+      "fingerprint": "cf57ceb04a5c492b",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Coursework: Data Structures, Databases, Software Engineering, Computer Vision"
     },
     {
-      "target": "cv.Projects[0].bullets[0]",
-      "fingerprint": "9b179e9bfff30020",
+      "target": "cv.sections[1].items[0].bullets[0]",
+      "fingerprint": "fe3398ebf4d85c1e",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "I owned the backend API (Python, FastAPI) and the route-batching heuristic that groups stops into routes."
     },
     {
-      "target": "cv.Projects[0].bullets[1]",
-      "fingerprint": "bf9d04a422f215a2",
+      "target": "cv.sections[1].items[0].bullets[1]",
+      "fingerprint": "047e7e192d87e9cb",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "I designed the PostgreSQL schema for stops, drivers and routes and exposed it through REST endpoints."
     },
     {
-      "target": "cv.Projects[0].bullets[2]",
-      "fingerprint": "a552fd8cf881bc03",
+      "target": "cv.sections[1].items[0].bullets[2]",
+      "fingerprint": "c80c6992ae8382d0",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "In a survey of the 4 coordinators, they reported that planning time per shift fell from about 25 minutes to about 10 minutes."
     },
     {
-      "target": "cv.Projects[1].bullets[0]",
-      "fingerprint": "738435091afd988f",
+      "target": "cv.sections[1].items[1].bullets[0]",
+      "fingerprint": "81ef92ce36a2de3a",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
     },
     {
-      "target": "cv.Experience[0].bullets[0]",
-      "fingerprint": "25e0f94a31796213",
+      "target": "cv.sections[2].items[0].bullets[0]",
+      "fingerprint": "ed7e1ad8d3665d69",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "My supervisor estimated it saved about 2 hours of staff time per week."
     },
     {
-      "target": "cv.Experience[0].bullets[1]",
-      "fingerprint": "60b98ba28b4c516d",
+      "target": "cv.sections[2].items[0].bullets[1]",
+      "fingerprint": "4bfb8fb29fb88101",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Resolved device and account issues for library staff and patrons."
     },
     {
-      "target": "cv.Experience[1].bullets[0]",
-      "fingerprint": "77bb808a547a891a",
+      "target": "cv.sections[2].items[1].bullets[0]",
+      "fingerprint": "f934478074efb5ad",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Held weekly office hours for a class of 40 students."
     },
     {
-      "target": "cv.Skills[0]",
-      "fingerprint": "d7285c55a37d3396",
+      "target": "cv.sections[3].items[0]",
+      "fingerprint": "a1e0b7cdaa0adcb8",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "a GitHub Action (JavaScript, Node.js) that flags images without alt text in HTML pull requests"
     },
     {
-      "target": "cv.Skills[1]",
-      "fingerprint": "55f6ab163fdb7c35",
+      "target": "cv.sections[3].items[1]",
+      "fingerprint": "b7acad1cf9a16c6c",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
     },
     {
-      "target": "cv.Skills[2]",
-      "fingerprint": "822a8372d774aea6",
+      "target": "cv.sections[3].items[2]",
+      "fingerprint": "aaef252ed7a8dea9",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "French (native), English (fluent).",
@@ -309,7 +309,7 @@
     },
     {
       "target": "job.requirement:R7",
-      "fingerprint": "7400a7db87f7d380",
+      "fingerprint": "06f392655832d55b",
       "verdict": "supported",
       "source": "S4",
       "excerpt": "Responsibilities: build and maintain Lanes API endpoints; write SQL against our PostgreSQL route data; write automated tests; work with the dispatch product team.",
@@ -373,7 +373,7 @@
     },
     {
       "target": "strategy.adaptation[1]",
-      "fingerprint": "599d319b1fa49105",
+      "fingerprint": "8d18a917984c8ed2",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "- What: a tool that counts products on shelf photos. I built image preprocessing with OpenCV and trained a detection model with PyTorch.",
@@ -465,24 +465,58 @@
     },
     {
       "target": "strategy.gaps[0]",
-      "fingerprint": "ab0123245d2037fa",
+      "fingerprint": "55b9f0bc930f866b",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."
     },
     {
       "target": "strategy.gaps[1]",
-      "fingerprint": "55e2c0ce99de8dc8",
+      "fingerprint": "ca5d53e1db8f5a81",
       "verdict": "supported",
       "source": "S5",
       "excerpt": "Python, SQL, JavaScript, FastAPI, Node.js, PostgreSQL, Git, GitHub Actions, Docker (local development only), PyTorch and OpenCV (coursework)."
     },
     {
       "target": "strategy.differentiation",
-      "fingerprint": "8406379f5a5968d6",
+      "fingerprint": "7d4d8549d7799928",
       "verdict": "supported",
       "source": "S3",
       "excerpt": "Our engineering team moved its routing services from a legacy monolith to Python services built with FastAPI on top of PostgreSQL."
+    },
+    {
+      "target": "questions[0].ask",
+      "fingerprint": "693398a839a1abef",
+      "verdict": "supported",
+      "neutral": true
+    },
+    {
+      "target": "questions[0].why",
+      "fingerprint": "aeb3761ab701ce82",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Required: Python; SQL; REST APIs; Git; experience deploying services on Kubernetes."
+    },
+    {
+      "target": "questions[1].ask",
+      "fingerprint": "b3866c6c6833aef0",
+      "verdict": "supported",
+      "source": "S4",
+      "excerpt": "Junior Software Engineer, Routing — Indianapolis, IN (hybrid), full-time"
+    },
+    {
+      "target": "questions[1].why",
+      "fingerprint": "eb7f984a2c81d41b",
+      "verdict": "supported",
+      "source": "S5",
+      "excerpt": "Available to start in January 2027. Open to relocating to Lyon, France."
+    },
+    {
+      "target": "job.requirement:R7.note",
+      "fingerprint": "8cdd7e50eb403a85",
+      "verdict": "supported",
+      "source": "S6",
+      "excerpt": "the route-batching heuristic that groups stops into routes"
     }
   ]
 }

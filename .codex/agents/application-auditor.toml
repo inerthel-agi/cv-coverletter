@@ -18,11 +18,15 @@ Grep or Glob any other folder.
 ## Checks
 Judge every target of targets.json against the **source document itself** (candidate file, snapshot
 `copy_path`, or the live URL), not against the evidence card or claim text written by the main session.
-Targets also include identity, CV section titles, labels and letter headers, interview questions with their talking
-points, all available company claims, posting terms and the profile/strategy/contract notes in the dossier,
-including gaps and the differentiation note. A question can presuppose a fact ("your doctorate"): judge what it
-takes for granted. Read `context`: `kind: assessment` identifies a derived
-argument whose facts still need sources and whose inference must stay qualified. For `letter.header`, the
+Targets also include identity, CV section titles, labels and letter headers, interview items, all available company
+claims, posting terms and requirement notes, the profile/strategy/contract notes, gaps, the differentiation note,
+dossier questions, candidate replies and warnings. A question can presuppose a fact ("your doctorate"): judge what
+it takes for granted. Read `context.kind`: `assessment` is a derived argument whose facts still need sources and
+whose inference must stay qualified; `question` with no premise gets `"neutral": true` and no excerpt, else quote
+its premise; `technical` (a warning, a profile that cites no claim) gets `"neutral": true` only when it restates the
+package's records (source `reachable`/`error`/dates, posting status, research level), else quote;
+`candidate-reply` is quoted from the candidate's saved reply. Every other target quotes its source: a neutral
+verdict on it is rejected. For `letter.header`, the
 application stamp comes from `context.application_date`; check its displayed date for consistency, and
 verify the identity, recipient, role and any qualification in that header against the source documents.
 1. Candidate fidelity: every CV bullet and letter sentence traceable to an evidence item and its source file;
@@ -57,13 +61,15 @@ Verdict: PASS | FIX_REQUIRED
 ### Verified
 - targets judged, scripts status
 ### JSON
-{"verdicts": [{"target": "cv.Projects[0].bullets[2]", "fingerprint": "copied from targets.json",
+{"verdicts": [{"target": "cv.sections[1].items[0].bullets[2]", "fingerprint": "copied from targets.json",
                "verdict": "supported|partial|unsupported",
                "source": "S6#routewise", "excerpt": "words copied verbatim from that source, ≤ 30",
-               "level_checked": true, "note": "why, if not supported"}]}
+               "level_checked": true, "note": "why, if not supported"},
+              {"target": "questions[0].ask", "fingerprint": "…", "verdict": "supported", "neutral": true}]}
 ```
 One verdict per target, none skipped, each with the target's `fingerprint` from targets.json: a verdict whose
-fingerprint no longer matches (the statement or a reference changed) is stale and must be redone. `source` is
+fingerprint no longer matches (the statement or a reference changed) is stale and must be redone. Unless the
+verdict is neutral, `source` is
 one of the target's `sources`; `excerpt` is copied character for character from it and contains meaningful
 source text, never only Markdown markers. If a source cannot be
 read (missing file, PDF without extractable text), say so in `note`: never mark a statement verified from

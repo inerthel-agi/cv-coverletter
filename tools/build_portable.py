@@ -62,9 +62,10 @@ GEMINI_EDITS = [
     (r"## 6\. Independent audit\n.*?(?=Fix \*\*only\*\* confirmed problems)",
      "## 6. Audit\nRun the `application-auditor` role last, on the CV, the letter and the dossier: one verdict per CV\n"
      "line (section titles included), letter sentence, interview question and talking points, gap, differentiation\n"
-     "note and company claim (supported, partial, unsupported), each with its source id and an excerpt copied\n"
-     "verbatim from that source. Ignore the role's mentions of targets.json, fingerprints and script outputs:\n"
-     "judge each statement directly against its source.\n"),
+     "note, company claim, requirement note, dossier question, candidate reply and warning (supported, partial,\n"
+     "unsupported), each with its source id and an excerpt copied verbatim from that source; a question or warning\n"
+     "that takes no fact for granted is judged neutral, without an excerpt. Ignore the role's mentions of\n"
+     "targets.json, fingerprints and script outputs: judge each statement directly against its source.\n"),
     (r"rerun the affected scripts and the audit of the changed targets", "rerun the audit of the changed statements"),
     (r"Say what the scripts prove.*?as \*\*not verified\*\*\.",
      "Say that no script checked the documents:\nevery check rests on the judgement of the same model."),

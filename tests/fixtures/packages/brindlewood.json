@@ -407,7 +407,7 @@
         "match": [
           "E1"
         ],
-        "note": "partial: route batching by stop location, no GIS tooling"
+        "note": "partial: the route-batching heuristic groups stops into routes; GIS tooling is not in the CV or project notes"
       }
     ],
     "language": "en",
@@ -803,7 +803,7 @@
       "blocking": false,
       "answer": null,
       "ask": "Have you deployed a container to a cluster or a managed cloud service (course, project or job)? A repository or course page would let the application cite it.",
-      "why": "R5 (Kubernetes) is a required gap; real deployment work would become partial evidence."
+      "why": "R5 (Kubernetes) is required and is not in the CV or project notes; real deployment work would become partial evidence."
     },
     {
       "id": "Q2",
@@ -818,7 +818,7 @@
       "blocking": false,
       "answer": null,
       "ask": "Are you looking for a full-time role, from which date, and can you work hybrid from Indianapolis, IN?",
-      "why": "Your documents state January 2027 and a move to Lyon only: the contract and location are not covered."
+      "why": "Your documents state a start in January 2027 and openness to relocating to Lyon only: the contract type and the Indianapolis location are not covered."
     }
   ]
 }

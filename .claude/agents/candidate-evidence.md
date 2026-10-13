@@ -35,7 +35,8 @@ authorised (portfolio, public GitHub repos), plus the target role if known. Read
    verbatim; never translate, upgrade or infer a level ("used daily" is not "advanced").
 7. Availability card, as stated: start date, contract sought, alternance rhythm, location and mobility.
 8. Anything missing (dates, role in team, numbers, level, availability) → a targeted question that asks for a
-   verifiable fact (link, document, date, who measured), never for an estimate.
+   verifiable fact (link, document, date, who measured), never for an estimate, and takes for granted nothing the
+   documents do not state.
 
 ## Output (final message only)
 ```

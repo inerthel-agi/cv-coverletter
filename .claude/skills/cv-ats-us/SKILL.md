@@ -68,7 +68,8 @@ acknowledgement or a failed call is not the note.
 - `CONTRACT_INCOMPATIBLE`: first check that each incompatible row's `candidate` side states that the candidate
   cannot or will not meet the posting's term; send any other row back to `recruitment-strategist` to re-check
   (it is `unknown`). Then stop: show the rows and ask the candidate whether to continue; record the answer in
-  `meta.contract_override`. Blocking questions are asked now too.
+  `meta.contract_override`. Blocking questions are asked now too; their answers go to `questions[].answer`. Save
+  every reply verbatim in `<dir>/candidate-replies.md`, listed as a `candidate` source: the audit quotes it.
 - Differentiation test fails (only names would change): run a targeted research pass; if research stays thin,
   set `research_level: "limited"` and personalise cautiously from the posting.
 
@@ -102,9 +103,11 @@ acknowledgement or a failed call is not the note.
 1. `python3 ${CLAUDE_SKILL_DIR}/scripts/audit_package.py <dir>/package.json --targets <dir>/targets.json`
 2. `application-auditor` receives the paths of `targets.json`, `package.json`, `dossier.md`, the script outputs
    and the source documents, and returns one verdict per target, carrying the target's `fingerprint`. Targets
-   include rendered identity, CV section titles, labels and letter headers, interview questions with their talking
-   points, every available company claim, posting terms, company profile and the strategy notes that reach the
-   dossier (gaps and differentiation included). Read each target's `context` too. Save its
+   cover every text of the documents and the dossier: identity, CV section titles and lines (named by position),
+   labels, letter headers, interview items, company claims, posting terms and requirement notes, company profile,
+   strategy notes, dossier questions, candidate replies and warnings, each with its treatment in `context.kind`
+   ([package-format.md](references/package-format.md)). Only a question or a technical note that takes nothing for
+   granted may be judged `"neutral": true`; every other target quotes its source. Save its
    JSON as `<dir>/audit.json`. After any change to the package, rerun `--targets`: changed statements get new
    fingerprints and their old verdicts are rejected as stale. Binary or partly readable source files are also
    bound by their file bytes; source metadata is part of the fingerprint. Save a re-audit of the changed targets as

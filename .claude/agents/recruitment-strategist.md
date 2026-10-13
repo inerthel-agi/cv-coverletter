@@ -31,7 +31,8 @@ The three notes (inline or as file paths). Use nothing else; if a fact is missin
    candidate's own skills list matches (cite the self-reported card, plus project evidence when it exists); only
    a skill absent from every source is a gap. A requirement can match partly and still list the missing part in
    `gap_terms`. A gap is never disguised; propose an honest framing that names the documents the skill is
-   absent from ("not in my CV or project notes"), never an absolute ("I have never…").
+   absent from ("not in my CV or project notes"), never an absolute ("I have never…"). A requirement `note`
+   states only what the posting and the matched evidence show, with the same rule for absences.
 4b. Real level: when a requirement states `level_required`, set `level_match` (`meets|below|unknown`) from the
    cited evidence's stage and its recorded `levels`, never from a translation or a guess. `below` caps the
    confidence at medium. A skill only self-reported is not `high` unless the source itself states the level
@@ -56,7 +57,8 @@ The three notes (inline or as file paths). Use nothing else; if a fact is missin
    requirement; a hypothesis or a contract row may complete it, never stand alone.
 8. Questions: at most 5, ranked by how much the answer would change the application: unknown contract rows,
    low-confidence arguments, the candidate-evidence questions. Each cites the need ids it serves, asks for a
-   verifiable fact, and is `blocking` only if writing cannot start without it.
+   verifiable fact, and is `blocking` only if writing cannot start without it. The `ask` takes no fact for granted
+   that its sources do not state; the `why` states only facts of the needs it cites.
 
 ## Output (final message only)
 ```

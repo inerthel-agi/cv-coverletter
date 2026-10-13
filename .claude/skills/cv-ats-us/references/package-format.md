@@ -51,7 +51,7 @@ package or a test fixture.
                                  "status": "compatible | incompatible | unknown", "basis": ["S4", "E8"]}],
                "contribution": {"scope": "…", "horizon_months": 6, "basis": ["C2", "R1"]}},
   "questions": [{"id": "Q1", "need": ["R5", "K2"], "evidence": ["E1"], "ask": "…", "why": "…",
-                 "blocking": false, "answer": null}],
+                 "blocking": false, "answer": null}],   // answer: the candidate's reply, saved as a candidate source
   "cv": {"name": "…", "contact": ["City", "phone", "email", "portfolio"], "headline": "…",
          "sections": [{"title": "Projects", "items": [
             {"heading": "…", "subheading": "tools or organisation", "location": "…", "dates": "…",
@@ -88,8 +88,8 @@ package or a test fixture.
   quote is an error. An excerpt empty after normalization is invalid. A `.docx`/`.md` export recorded as
   `copy_path` is read instead of an unreadable PDF. A direct candidate URL is remote, not a missing local file;
 - a figure from an estimate or survey stays attributed where it is used ("my supervisor estimated…",
-  "(estimated by …)"); stated bare → `E_ESTIMATE_AS_MEASURE`; calendar dates ("October 2, 2026", "2 octobre 2026",
-  "2026-10-02") are not figures;
+  "(estimated by …)"); stated bare → `E_ESTIMATE_AS_MEASURE`; calendar dates and ISO date-times ("October 2, 2026",
+  "2 octobre 2026", "2026-10-02", "2026-10-02T10:00+02:00") are not figures;
 - generation settings `market`, `language`, `paper`, `font`, `margin_in` (0.5–1.0), `fit`, `max_cv_pages` and
   `cv.name_size` have valid types and values (located `E_STRUCTURE`); `build_docs.py` refuses the same values
   before writing anything;
@@ -99,7 +99,8 @@ package or a test fixture.
 - letter body 150–300 words in every language;
 - named recipient (civility + name, or a name in the salutation, in any language) requires `recipient_source`;
   no ATS score / guarantee wording; no placeholders;
-- a CEFR level in the documents never exceeds the level recorded in the cited evidence; argument with
+- a CEFR level in the documents or the interview talking points never exceeds the level recorded in the cited
+  evidence; argument with
   `confidence: low` never placed in the CV; `confidence: high` never on a requirement whose `level_match` is
   `below`; need ids of arguments exist;
 - `contract_fit`: `compatible` needs candidate-side evidence; a field the posting does not state is `unknown`,
@@ -124,8 +125,8 @@ package or a test fixture.
   gets a located `E_STRUCTURE`. `cv.name` is non-empty text. Durations/horizons are positive numbers or null;
 - `meta.mode` and `meta.language` stated (language also in `create`); keys required by the mode (`create`: cv + evidence; `tailor`: + sources,
   claims, job, strategy; `cover-letter` and `package`: + letter);
-- evidence read from a local file has `excerpts`; a language level or CEFR in the documents cites evidence with
-  recorded `levels`;
+- evidence read from a local file has `excerpts`; a language level or CEFR in the documents or the interview
+  talking points cites evidence with recorded `levels`;
 - `job.contract` and `strategy.contract_fit` present, with one row per `field` for `type`, `start`, `location`,
   plus `duration` and `rhythm` when the posting states them (`[]` is incomplete); `strategy.hiring_context` with
   problem, risk and basis;
@@ -147,19 +148,33 @@ sources its references allow it to quote (cited evidence, claims, and the postin
 a `fingerprint` of the statement, its `context`, the current content of those references, source metadata and
 the text actually read from each source document (its `copy_path` when present). Binary and partly readable
 sources also include a file-byte hash. Complete plaintext uses its whole decoded text so fingerprints remain
-portable across checkout line endings. Targets cover identity, CV section titles, labels and letter headers,
-interview questions with their talking points, all company claims except `unavailable`, stated posting terms,
-company profile, hiring context, contribution, contract comparisons, adaptation, arguments, `strategy.gaps` and
-`strategy.differentiation` (these two cite no ids: they are judged against every evidence card and requirement,
-plus the company facts for differentiation). An assessment may be an explicitly qualified inference; it is never a new factual
+portable across checkout line endings. Targets cover every text of the documents and the dossier, each with the
+treatment below (`context.kind`); `strategy.gaps` and `strategy.differentiation` cite no ids: they are judged
+against every evidence card and requirement, plus the company facts for differentiation. An assessment may be an
+explicitly qualified inference; it is never a new factual
 claim. `letter.header.context.application_date` supplies the application stamp; the auditor checks that the
 displayed date matches it and checks names/contacts/role against source files. `--verdicts audit.json` rejects
 a missing target, a stale verdict (fingerprint changed: the statement or a reference was edited), a verdict
 other than `supported`, a source outside the target's references, a target with no reference at all, a level
-target without `level_checked`, and an excerpt not found verbatim in a readable local source or empty after
+target without `level_checked`, a `"neutral": true` verdict on a target that is not a question or a technical
+note, and an excerpt not found verbatim in a readable local source or empty after
 normalization. Conflicting verdict statuses on the same current fingerprint are errors regardless of file
 order; resolve the saved conflict explicitly. Quotations it cannot check (live page, unreadable or partly
 readable file) are listed in `verification.unchecked`, never counted as verified.
+
+| Treatment | Fields (target names) | A `supported` verdict |
+|---|---|---|
+| statement to source | `cv.identity`, `cv.headline`, `cv.sections[i].title`, `cv.sections[i].items[j]` and `….bullets[k]`, `letter.*`, `interview[i]` (question and talking points), confirmed `claim:<id>`, `job.posting_status`, `job.contract`, `job.requirement:<id>`; candidate replies `questions[i].answer`, `meta.contract_override` | quotes one of its sources; a reply is quoted from the copy saved as a `candidate` source |
+| qualified hypothesis | hypothesis `claim:<id>`, `company_profile`, `strategy.*`, `job.requirement:<id>.note`, `questions[i].why` (`kind: assessment`) | quotes the facts it rests on; the inference stays hedged |
+| neutral question | `questions[i].ask` (`kind: question`) | `"neutral": true` when it takes no fact for granted; a premise is quoted |
+| technical note | `meta.warnings[i]`, a `company_profile` that cites no claim (`kind: technical`) | `"neutral": true` when it only restates the package's records (source states and dates, posting status, research level); any other fact is quoted |
+| not a target | `unavailable` claims (never used), ids, enums, source metadata | checked by the scripts |
+
+CV targets are named by position, so two sections with the same title never share a target and a reordered
+section's verdicts go stale. The CV, the letter and the interview talking points state the candidate's levels
+(anchored in leveled evidence); a level an interview question asks about, or a dossier note mentions, makes the
+target a level target only. In dossier text, a CEFR-like code that is also a package id (claim `C2`) is a level
+only next to a language name or a level word.
 
 ## Documents built from the package
 `build_docs.py` writes `build.json` next to the documents (hash of the package content and of each file).

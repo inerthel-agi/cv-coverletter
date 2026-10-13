@@ -29,3 +29,11 @@ project notes"), as the strategist and auditor contracts require. In `verdicts/b
 interview verdicts were re-issued (new fingerprints; `interview[0]` now quotes the heuristic sentence) and seven
 verdicts were added (four section titles, two gaps, differentiation), each excerpt hand-picked and found verbatim in
 an allowed source; every other verdict is unchanged. These verdicts still only test the mechanism.
+
+Second pre-commit review update (2026-10-13): CV targets are named by position (`cv.sections[i].items[j]`), and
+dossier questions, requirement notes, warnings and candidate replies became targets. In `brindlewood.json`, the R7
+note and the two question rationales name the documents an absence was checked against and keep the source's wording
+("openness to relocating", not "a move"). In `verdicts/brindlewood.json`, 16 CV verdicts were renamed (same
+statement, same quotation), 5 were re-issued because the R7 note is part of their references (`job.requirement:R7`,
+`strategy.adaptation[1]`, both gaps, differentiation; statements unchanged), and 5 were added: `questions[0].ask`
+judged neutral (it takes no fact for granted) and four quotations found verbatim in an allowed source.

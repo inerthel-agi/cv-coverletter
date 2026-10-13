@@ -1000,7 +1000,9 @@ class LevelTests(unittest.TestCase):
         self.assertNotIn("letter.paragraphs[2]", audit(q)[1].level_lines)
         b = load("brindlewood")
         b["cv"]["sections"][1]["items"][0]["bullets"][0]["text"] += " (native app; programming languages: Python)"
-        self.assertNotIn("cv.Projects[0].bullets[0]", audit(b)[1].level_lines)
+        au = audit(b)[1]
+        self.assertIn("cv.sections[1].items[0].bullets[0]", {t["target"] for t in au.targets()})
+        self.assertNotIn("cv.sections[1].items[0].bullets[0]", au.level_lines)
 
     def test_required_level_not_met_caps_confidence(self):
         q = load("quarrelane")

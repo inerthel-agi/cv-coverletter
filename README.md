@@ -54,8 +54,8 @@ Model policy: a large model orchestrates, subagents run small — Claude Code ag
   `--compare`); contract rules for `meta.schema: 2` (mode, employment-contract fit, hiring context,
   contribution sized to the contract, level assessment, questions), warnings for older packages.
   `--targets FILE` lists the statements `application-auditor` must judge; `--verdicts audit.json` checks that
-  every target got a `supported` verdict quoting meaningful source text verbatim. Targets include headers, CV section
-  titles, interview questions, available company claims and dossier assessments (gaps, differentiation); conflicting
+  every target got a `supported` verdict quoting meaningful source text verbatim (a question or technical note may be
+  neutral). Targets cover every text of the CV (named by position), letter, interview and dossier; conflicting
   current verdicts are refused in any order; so are empty CV sections and invalid generation settings.
 - `build_docs.py`: DOCX + PDF and `build.json`; refuses a PDF whose text the standard PDF font cannot show.
 - `check_docs.py`: layout (including hidden properties in applicable styles), two-way text extraction, and
@@ -113,9 +113,9 @@ found in review (partly matched gaps, unchecked CV dates and degrees, evidence n
 candidate's files, open postings without a reachable source, interview points, named recipients, PDF character
 loss, stale documents, e2e runs reusing earlier outputs), the employment contract, levels, questions,
 differentiation, auditor verdicts, and an older package (`tests/fixtures/packages/legacy/`) that must still pass.
-`tests/test_review_regressions.py` (run by `run_tests.py`) adds 24 offline regression cases: header/dossier coverage,
-partial PDFs, conflicting verdicts, Windows input formats, agent retirement, empty CV sections, interview questions,
-gaps and differentiation, letter dates, generation settings and e2e audit rounds.
+`tests/test_review_regressions.py` (run by `run_tests.py`) adds 30 offline regression cases: dossier coverage, partial
+PDFs, conflicting verdicts, Windows input formats, agent retirement, empty CV sections, interview questions and levels,
+CV target names, gaps and differentiation, letter dates and ISO date-times, generation settings and e2e audit rounds.
 
 ```bash
 python3 tests/e2e/run_e2e.py --model haiku
