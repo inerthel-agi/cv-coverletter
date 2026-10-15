@@ -178,8 +178,14 @@ class ConfigTests(unittest.TestCase):
             for script in re.findall(r"\$\{CLAUDE_SKILL_DIR\}/(scripts/[\w.]+)", text):
                 self.assertTrue(os.path.exists(os.path.join(SKILL, script)), script)
         for ref in ("university-guidelines", "ats-and-layout", "recruiting-framework", "project-evidence",
-                    "cover-letter", "source-policy", "package-format", "company-context"):
+                    "cover-letter", "source-policy", "package-format", "company-context", "career-change"):
             self.assertTrue(os.path.exists(os.path.join(SKILL, "references", ref + ".md")), ref)
+
+    def test_career_change_is_wired(self):
+        self.assertIn("references/career-change.md", read(os.path.join(SKILL, "SKILL.md")))
+        strategist = read(os.path.join(ROOT, ".claude", "agents", "recruitment-strategist.md"))
+        self.assertIn("Career change", strategist)
+        self.assertIn("never a functional CV", strategist)
 
     def test_no_competing_user_skill_and_outputs_ignored(self):
         for user_skill in ("~/.claude/skills/cv-ats-us", "~/.agents/skills/cv-ats-us"):
@@ -623,6 +629,22 @@ class RegressionTests(unittest.TestCase):
         requirement(b, "R5")["match"] = ["E1"]  # documented shape: partial match + missing part
         cv_item(b, "Docker")["text"] += ", Kubernetes"
         self.assertIn("E_GAP_IN_CV", audit(b)[0])
+
+    def test_matched_posting_term_absent_from_cv_warns(self):
+        b = load("brindlewood")
+        self.assertNotIn("W_TERM_NOT_IN_CV", warn_codes(b))  # no terms listed: old packages stay quiet
+        requirement(b, "R1")["terms"] = ["Python", "FastAPI", "Airflow"]
+        requirement(b, "R1")["gap_terms"] = ["Airflow"]
+        au = audit(b)[1]
+        missing = [w["msg"] for w in au.warnings if w["code"] == "W_TERM_NOT_IN_CV"]
+        self.assertEqual(len(missing), 0, missing)  # Python, FastAPI are in the CV; Airflow is a declared gap
+        self.assertIn({"requirement": "R1", "term": "Airflow", "status": "gap"}, au.coverage())
+        requirement(b, "R1")["terms"].append("REST API")
+        au = audit(b)[1]
+        self.assertTrue(any("REST API" in w["msg"] for w in au.warnings if w["code"] == "W_TERM_NOT_IN_CV"))
+        self.assertIn({"requirement": "R1", "term": "REST API", "status": "missing"}, au.coverage())
+        requirement(b, "R1")["terms"] = "Python"
+        self.assertTrue(list(audit_package.structure_errors(b)))  # terms is a list of strings
 
     def test_cv_heading_dates_and_degree_need_evidence(self):
         b = load("brindlewood")

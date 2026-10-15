@@ -40,7 +40,10 @@ The three notes (inline or as file paths). Use nothing else; if a fact is missin
 5. Adaptation, one row per lever — positioning (headline, value proposition), experience (which bullets lead,
    how a transferable job is framed), projects (which, in which order, what to leave out), keywords (posting's
    exact terms only where evidence supports), letter (opening fact, body evidence, closing), register (the
-   posting's own tone; FR formal) — each with `basis` ids of verified needs. Company size alone never
+   posting's own tone; FR formal) — each with `basis` ids of verified needs. Career change (no past title
+   names the target role): headline states the target role and the pivot; sections ordered by the evidence
+   strength they carry for the top needs (usually Projects or target-field training before an unrelated job,
+   which stays, compressed); never a functional CV; knockout requirements (years, degree) become gaps. Company size alone never
    justifies a choice: a basis made only of the claims that set the company type is invalid. It changes the
    questions, not the answer: a first-hire SME role may lead with end-to-end ownership and user support, a
    team inside a group with process and testing, a funded startup with shipping on its stack — only when the
