@@ -35,6 +35,7 @@ package or a test fixture.
           "requirements": [{"id": "R1", "text": "…", "level": "required | preferred",
                             "level_required": "fluent | 3+ years | …",            // posting's words, or null
                             "level_match": "meets | below | unknown",              // set by the strategist
+                            "terms": ["Power BI", "SQL"],                       // posting's exact words to match
                             "match": ["E1"], "gap_terms": ["Kubernetes"], "note": "…"}]},
   "evidence": [{"id": "E1", "title": "…", "stage": "prototype | used | …", "dates": "…",
                 "tools": ["…"], "facts": ["…"], "metrics": ["…"], "source": "S6#section",
@@ -118,6 +119,9 @@ package or a test fixture.
 - size clichés ("fast-paced startup", "wear many hats", "grand groupe comme le vôtre"…) in CV/letter → `E_SIZE_CLICHE`;
 - `--compare OTHER.json`: letters < 75 % similar once company and role names are removed; same CV headline and
   lead entries → `W_SAME_CV_LEAD`.
+- a requirement's posting `terms`: each one is `in_cv`, `gap` (in its `gap_terms`, or the requirement has no match)
+  or `missing` (matched by evidence, absent from the CV) → `W_TERM_NOT_IN_CV`. The output's `coverage` lists every
+  term with its status; copy it into `dossier.md`. Terms are part of the requirement's audit target.
 
 ## Contract rules: errors for `meta.schema: 2`, warnings (`W_…`) for older packages
 - `meta.schema`, when present, is the integer `1` or `2`; strings, booleans and other versions are errors,

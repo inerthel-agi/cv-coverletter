@@ -80,7 +80,8 @@ acknowledgement or a failed call is not the note.
    Apply every adaptation choice: headline, section and bullet order, projects kept or left out, posting terms
    where evidence supports them, letter opening (a claim or requirement of this company) and register.
    Flag the letter's contribution paragraph `contribution: true`.
-   CV: [ats-and-layout.md](references/ats-and-layout.md), [project-evidence.md](references/project-evidence.md).
+   CV: [ats-and-layout.md](references/ats-and-layout.md), [project-evidence.md](references/project-evidence.md);
+   career change (past titles do not name the target role): [career-change.md](references/career-change.md).
    Letter (body under 300 words, any language): [cover-letter.md](references/cover-letter.md). Sources: [source-policy.md](references/source-policy.md).
 2. Deterministic checks, fix until `"ok": true`:
    ```bash
@@ -96,7 +97,8 @@ acknowledgement or a failed call is not the note.
    under PowerShell; an empty pattern is an error. To compare two applications of the same
    candidate: `audit_package.py A.json --compare B.json`.
 3. Write `<dir>/dossier.md`: company brief + evidence table (claim, URL, title, published, accessed,
-   status), job analysis, contract fit, hiring context, strategy matrix, gaps, questions, interview talking
+   status), job analysis, term coverage table (from `audit_package.py`'s `coverage`: term, requirement,
+   in CV / missing / gap), contract fit, hiring context, strategy matrix, gaps, questions, interview talking
    points.
 
 ## 6. Independent audit

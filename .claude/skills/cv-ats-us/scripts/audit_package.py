@@ -204,7 +204,8 @@ TEXT_FIELDS = {"id", "title", "text", "heading", "subheading", "label", "locatio
                "contract_override", "font", "paper", "unit", "research_level", "retrieved_via", "copy_path", "url",
                "company", "role", "start", "rhythm", "remote", "question", "talking_points", "answer",
                "accessed", "published", "value_proposition", "differentiation", "recipient_source", "posting_status"}
-TEXT_LISTS = {"facts", "metrics", "excerpts", "tools", "contact", "recipient", "warnings", "gaps", "language_basis"}
+TEXT_LISTS = {"facts", "metrics", "excerpts", "tools", "contact", "recipient", "warnings", "gaps", "language_basis",
+              "terms"}
 NULLABLE_TEXT = {"dates", "location", "source", "level_required", "level_match", "unit", "recipient_source",
                  "contract_override", "note", "copy_path", "start", "rhythm", "remote", "answer"}
 
@@ -727,6 +728,19 @@ class Audit:
                 self.err("E_CV_ITEM_UNSUPPORTED", "%s: %s in heading or dates absent from cited evidence %s"
                          % (where, sorted(extra), refs))
 
+    def coverage(self):
+        """Posting terms of each requirement: in the CV, a declared gap, or evidenced yet missing from the CV."""
+        if not isinstance(self.p.get("cv"), dict):
+            return []
+        cvt, rows = self.cv_text(), []
+        for r in (self.p.get("job") or {}).get("requirements", []):
+            gaps = {g.lower() for g in r.get("gap_terms") or []}
+            for term in r.get("terms") or []:
+                status = ("in_cv" if term_in(term, cvt) else "gap" if term.lower() in gaps or not r.get("match")
+                          else "missing")
+                rows.append({"requirement": r.get("id"), "term": term, "status": status})
+        return rows
+
     def cv_text(self):
         cv = self.p["cv"]
         parts = [cv.get("headline", "")]
@@ -1060,6 +1074,10 @@ class Audit:
             if r.get("level_required") and r.get("match") and r.get("level_match") not in LEVEL_MATCH:
                 self.req("E_LEVEL_UNASSESSED", "%s asks for level %r: set level_match to %s from the cited evidence"
                          % (r.get("id"), r.get("level_required"), sorted(LEVEL_MATCH)))
+        for row in self.coverage():
+            if row["status"] == "missing":
+                self.warn("W_TERM_NOT_IN_CV", "%s is matched by evidence but the posting term '%s' is not in the CV: "
+                          "use it where that evidence appears, or say why not" % (row["requirement"], row["term"]))
         adapt = st.get("adaptation") or []
         levers = [a.get("lever") for a in adapt]
         if self.reqs and (set(levers) != LEVERS or len(levers) != len(set(levers))):
@@ -1294,7 +1312,7 @@ class Audit:
                 add("job.contract", json.dumps(values, sort_keys=True, ensure_ascii=False),
                     sources=[contract.get("source") or job_source] if contract.get("source") or job_source else [])
             for rid, req in self.reqs.items():
-                stated = {k: req.get(k) for k in ("text", "level", "level_required") if req.get(k)}
+                stated = {k: req.get(k) for k in ("text", "level", "level_required", "terms") if req.get(k)}
                 add("job.requirement:%s" % rid, json.dumps(stated, sort_keys=True, ensure_ascii=False), reqs=[rid])
                 if req.get("note"):  # the strategist's reading of the requirement against the matched evidence
                     add("job.requirement:%s.note" % rid, req["note"], *refs_of([rid]), context=notes)
@@ -1498,6 +1516,9 @@ def main(argv=None):
                      "confirmed_company_facts": getattr(au, "confirmed", 0),
                       "company_type": profile.get("type", "missing"),
                      "letter_words": getattr(au, "letter_words", 0)}}
+    coverage = au.coverage() if hasattr(au, "ev") else []
+    if coverage:
+        out["coverage"] = coverage
     if a.compare and not au.initial_structure:
         try:
             other = load_json(a.compare)

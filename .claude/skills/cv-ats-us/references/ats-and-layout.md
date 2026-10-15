@@ -17,13 +17,16 @@ reads in seconds and whose text any parser can extract in the right order.
 ## Structure
 - One column. Standard section titles: Education / Experience / Projects / Skills (FR: Formation /
   Expérience / Projets / Compétences). Order by relevance to the role; reverse chronology inside sections.
+  Career change: [career-change.md](career-change.md) (hybrid CV, strongest evidence first, never functional).
 - Contact info in the body, not in a header/footer: name, city, phone, email, portfolio/GitHub/LinkedIn as text.
 - Entry line: bold title + right-aligned dates (tab stop, not a table). Then organisation, location.
 - Bullets: `action verb + work done + attested result`. A measure is optional; never invent one.
 - Skills: only skills proven by evidence; qualify partial ones ("Docker (local development)").
 - Never repeat a section title as a line label ("Skills:" under SKILLS); `build_docs.py` drops such labels.
 - No tables, text boxes, images, icons, skill bars, colors as meaning, hidden or white text, keyword stuffing.
-- Keywords: reuse the posting's exact terms **only** where the evidence supports them.
+- Keywords: reuse the posting's exact terms **only** where the evidence supports them. ATS search matches words,
+  not synonyms: write "Power BI" when the posting says it and a project used it, not "dashboards". Put each
+  evidenced term in Skills **and** in the bullet that proves it. `W_TERM_NOT_IN_CV` flags an evidenced term left out.
 
 ## Files
 - `scripts/build_docs.py` writes DOCX (editable, Arial/Calibri) and PDF (Helvetica = Arial metrics,
