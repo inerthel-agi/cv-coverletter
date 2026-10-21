@@ -39,6 +39,26 @@
 - No negative-only bullets ("the app was not deployed"): scope positive bullets instead ("course prototype",
   "Docker for local development"); limits go to `dossier.md` and interview notes.
 
+## XYZ rewrite (improvement round)
+"Accomplished [X] as measured by [Y], by doing [Z]": Laszlo Bock (then Google SVP People Operations),
+"My Personal Formula for a Winning Resume", LinkedIn, 2014. Original post not fetched; known through secondary
+coverage (Business Insider, accessed 2026-10-21). FR: « Accompli [X], mesuré par [Y], grâce à [Z] ». A guide
+for each bullet, not a template to fill in; the formula above (verb + work + attested effect) stays the rule.
+- **X** = the outcome for someone (users, team, client, process), **Y** = the attested measure, **Z** = what the
+  candidate personally did, with the tools actually used. Lead with X when Y exists; otherwise lead with Z.
+- **Y missing**: never estimate. Either add a targeted question (origin of a number, who measured) or write Y
+  qualitatively from the source: stage and scope ("used by the club's volunteers during the pilot"), adoption
+  ("adopted by"), feedback with its author ("coordinators reported…"), or a before/after the source describes.
+- Same evidence only: a rewrite rewords its bullet's own evidence card, never borrows another card's figure.
+
+| Field | X (outcome) | Y (typical attested measure) | Z (method) |
+|---|---|---|---|
+| Tech | feature shipped, bug class removed, faster build, data made usable | users, latency, test coverage, incidents, run time | stack, design choice, tests, automation |
+| Finance | closing, reporting, reconciliation, analysis delivered | deadline met, error count, volume handled, scope (entities, accounts) | model, tool (Excel, SQL, ERP), control |
+| Transversal (project, ops, support, sales, HR) | process improved, people served, decision enabled | people or cases handled, time, satisfaction as reported, adoption | coordination, procedure, tool, training |
+In a career change, the X of a past job is written in the target field's terms when it is the same skill
+(a logistics schedule → "planned routes for N drivers"), never by renaming the job.
+
 ## Forbidden
 Inventing or inflating numbers, skills, degrees, dates, titles, management, users, adoption, revenue,
 responsibilities, language levels. Turning "used" into "expert", a prototype into a product, a course
@@ -49,7 +69,22 @@ A skill listed in the candidate's own CV or skills section is self-reported evid
 card and, when possible, a project that used it. A required skill with no evidence anywhere goes to
 `job.requirements[].gap_terms`. It never appears in the CV.
 The letter may address it honestly in one paragraph flagged `addresses_gap: true`
-(what is missing, nearest real evidence, concrete ramp-up).
+(what the documents do not show, then the nearest real evidence).
+
+## Absences and gaps: how to write them
+The sources prove what the documents contain, never what the person has not done. Write every absence as a
+fact about the documents checked, from the first draft (CV, letter, interview, notes, questions):
+- "My CV and project notes do not mention Airflow." / « Mon CV et mes notes de projets ne mentionnent pas
+  Airflow. » Never "I have never used Airflow", « je n'ai pas encore utilisé… », « vous n'avez jamais… »
+  (`E_ABSENCE_AS_FACT`), unless a candidate source says it in those words (a saved reply).
+- A documented limit keeps the source's subject: "its accuracy was not formally measured", "the app was never
+  deployed with Kubernetes", not "I never measured" or "I have not deployed services".
+- No unsourced commitment: no learning plan, first goals or "I would learn X with the team" unless the candidate
+  stated it (`E_UNSOURCED_COMMITMENT` catches the common forms; the auditor catches the rest). Name the gap,
+  give the nearest evidence, and stop; ask for the plan in `questions` and put the answer, once saved, in the
+  letter or the interview notes.
+- An interview question presupposes nothing either: "Your documented projects do not show Airflow: how would you
+  start?", not "You have never used Airflow".
 
 ## Targeted questions (`questions` in package.json)
 At most 5, ranked by how much the answer would change the application, each tied to the need ids it serves:

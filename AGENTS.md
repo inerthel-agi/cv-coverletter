@@ -47,6 +47,7 @@ AGENTS.md
     job-intelligence.md
     candidate-evidence.md
     recruitment-strategist.md
+    hiring-manager.md
     application-auditor.md
 tests/                       # Fictitious fixtures, regression cases
 README.md
@@ -56,7 +57,7 @@ If the skill is already installed in `~/.claude/skills/cv-ats-us/`, identify its
 
 Create the subagents with valid YAML frontmatter as documented by Claude Code (`name`, `description`, `tools`, `model`, etc., only where supported). Model policy: a large model orchestrates; subagents run on a small model. Claude Code: whatever the main model (Fable, Opus, Sonnet), subagents use `model: haiku` (Haiku 5.5). Codex: when the main model is a large GPT-6 model (e.g. Astra), subagents use the small model (Luna). Adapt this mapping when the large models change. Codex files: `.codex/agents/*.toml` are generated from `.claude/agents/*.md` by `tools/sync_codex_agents.py` (`model = "gpt-6-luna"`, `sandbox_mode = "read-only"`); the skill is exposed to Codex through the symlink `.agents/skills/cv-ats-us`. Give research and audit agents **minimal permissions**, read-only unless justified.
 
-The main skill orchestrates; the subagents **analyze**, then return structured notes. Do not duplicate the long agent prompts in `SKILL.md`. Delegate only when a task deserves independent or parallel analysis; do not deploy all five agents for a spelling correction.
+The main skill orchestrates; the subagents **analyze**, then return structured notes. Do not duplicate the long agent prompts in `SKILL.md`. Delegate only when a task deserves independent or parallel analysis; do not deploy all six agents for a spelling correction.
 
 ## Recruitment pipeline
 
@@ -110,6 +111,34 @@ Produce on request: CV (`create`, `tailor`), cover letter (`cover-letter`), proj
 **Letter**: one page, specific to the company and the role, without repeating the CV: why this company (sourced fact), why this role, why this candidate (evidence), plausible contribution. Keep the body under 300 words in every language (target 220–300). Do not produce generic flattery, assumptions presented as certainties or invented recruiter names.
 
 Create an editable DOCX, then a PDF if available tools allow it. Without a usable generator/converter, provide structured text without claiming a document exists. Check the rendering and extraction whenever files are produced.
+
+### 5b. `hiring-manager` — Would this earn an interview?
+
+After the documents are built, a simulated hiring manager grades the application on a 1–4 scale without a middle
+(first screen, evidence strength, company fit and ATS readability weigh double; coherence of the path, level fit,
+motivation, objections, defensibility weigh single; in a career change, `career_bridge` is added at double weight
+and coherence doubles). It
+rates every required requirement (`evidenced / transferable / gap`) against the package's matches and lists
+transferable skills, objections and fixes (`document` from existing evidence, or `candidate` actions).
+`audit_package.py --review` computes a weighted mean and the band: `strong`, `competitive`, `long-shot` → apply (a
+long shot is still worth trying), `blocked` → ask the candidate. Below `strong`, the skill improves the application
+(two rounds at most) with targeted fixes and XYZ bullet rewrites ("Accomplished X as measured by Y, by doing Z"),
+adapted to tech, finance and transversal roles, using only the bullet's own evidence: a missing figure becomes a
+question or a qualitative wording. A career change is judged on evidence and the explained pivot, never penalised
+or hidden. No percentage, no promise.
+
+When the band means a decline, the simulated manager explains it as a real one rarely does: the weak points
+(each tied to a criterion scored 1–2 or a missing required requirement) and an ordered plan to readjust the CV.
+
+### 5c. `debrief` — After a rejection
+
+A generic rejection gives no reason. Mode `debrief` reads the documents **as sent** with the posting:
+`job-intelligence` re-checks the posting, `hiring-manager` scores the sent version and explains its decline,
+`check_docs.py` tests text extraction. The skill ranks hypotheses (knockout, requirement gap, ATS parsing,
+keywords, level, first screen, evidence, company fit, motivation, coherence, invisible factors) with signals
+for and against, never stating a cause as fact, and writes a CV readjustment plan and a feedback request draft
+that only the candidate may send. Debriefs of earlier rejections reveal recurring causes and feed the next
+`tailor` run. `audit_package.py --debrief` checks the debrief and lists the patterns.
 
 ### 6. `application-auditor` — Independent verification
 

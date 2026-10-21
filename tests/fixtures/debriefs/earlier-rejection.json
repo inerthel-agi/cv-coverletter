@@ -1,0 +1,15 @@
+{
+  "debrief": {
+    "rejection": {"sent": "2026-09-14", "received": "2026-09-30", "stage": "no-reply", "message": "generic", "source": null},
+    "posting_now": "closed",
+    "extraction_ok": true,
+    "hypotheses": [
+      {"rank": 1, "cause": "first-screen", "for": ["Headline did not name the target role"], "against": [],
+       "basis": ["first_screen"], "action": "Name the target role in the headline"},
+      {"rank": 2, "cause": "requirement-gap", "for": ["Kubernetes required, absent from the CV"], "against": [],
+       "basis": ["R5"], "action": "Keep the gap declared"}
+    ],
+    "questions": [],
+    "feedback_request": "Thank you for your reply. Could you tell me which part of my profile fell short for this role?"
+  }
+}

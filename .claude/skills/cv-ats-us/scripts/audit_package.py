@@ -15,6 +15,8 @@ Usage:
   python3 audit_package.py PACKAGE.json [--compare OTHER.json] [--root DIR]
   python3 audit_package.py PACKAGE.json --targets             # verification targets for application-auditor
   python3 audit_package.py PACKAGE.json --verdicts AUDIT.json # check the auditor's verdicts
+  python3 audit_package.py PACKAGE.json --review REVIEW.json  # check the hiring-manager review, compute its band
+  python3 audit_package.py PACKAGE.json --debrief DEBRIEF.json [EARLIER.json ...]  # rejection debrief + patterns
 Relative source paths resolve against --root (default: current directory). Exit code 1 if any error.
 """
 import argparse
@@ -63,6 +65,14 @@ ATS_PROMISE = re.compile(r"\d{1,3}\s*%\s*(ats|match|compatib)|ats[- ]?(score|pro
                          r"\bguarantee[sd]?\b|\bgaranti(e|t|s)?\b|pass(es)? (the |any )?ats", re.I)
 PLACEHOLDER = re.compile(r"\bTODO\b|\bTBD\b|XXX|\{\{|\[(?:name|company|role|insert|à compléter|a completer)[^\]]*\]"
                          r"|lorem ipsum", re.I)
+# An absence is a fact about documents, not about the person: "my CV and project notes do not mention X". "I have
+# never used X" or a learning promise holds only when a candidate source says it (a saved reply, a document).
+NEGATION = re.compile(r"\b(?:je n['’]ai (?:jamais|pas encore|aucune?)\b|je ne (?:connais|maîtrise) pas\b|"
+                      r"vous n['’]avez (?:jamais|pas encore)\b|I(?: have)? never\b|I have(?:n['’]t| not)(?: yet)?\b|"
+                      r"I(?: do not|['’]ve never| don['’]t) (?:know|have)\b|you have never\b|you(?: have)? not yet\b)", re.I)
+COMMITMENT = re.compile(r"\b(?:je m['’]engage\b|je me formerai\b|je compte (?:me former|apprendre)\b|je mènerai[st]?\b|"
+                        r"je (?:monterai|monterais) en compétence\b|I will (?:learn|master|ramp up|get up to speed)\b|"
+                        r"I commit to\b|I plan to (?:learn|train)\b)", re.I)
 DISCLAIMER = re.compile(r"\((?:self[- ]reported|auto[- ]d[ée]clar\w*|d[ée]claratif|non mesur\w*)[^)]*\)|"
                         r"no other measurement|(?:only|sole) measurement|present it as such|"
                         r"sans autre mesure|non d'une mesure|pas d'une mesure", re.I)
@@ -422,6 +432,7 @@ class Audit:
         self.check_letter()
         self.check_levels()
         self.check_estimates()
+        self.check_absences()
         self.check_text_hygiene()
         self.check_interview()
         self.check_language()
@@ -971,6 +982,22 @@ class Audit:
                 self.err("E_POSTING_STATUS", "posting marked open but its source %s is not reachable: use 'unverified' "
                                              "and warn" % job.get("source"))
 
+    def check_absences(self):
+        """A first-person absence ("I have never used X") or a learning promise needs a candidate source that says
+        it; otherwise write the absence as one of the documents ("my CV and project notes do not mention X")."""
+        lines = list(self.doc_lines()) + [("interview[%d]" % i, self.interview_text(q), q.get("evidence") or [])
+                                          for i, q in enumerate(self.p.get("interview") or [])]
+        lines += [(where, text, []) for where, text in self.dossier_notes() if not where.endswith(".answer")]
+        for where, text, refs in lines:
+            said = " ".join(x for r in (refs or list(self.ev)) for x in self.ev.get(r, {}).get("excerpts") or [])
+            for rx, code, fix in ((NEGATION, "E_ABSENCE_AS_FACT", "write what the documents show: \"my CV and project "
+                                   "notes do not mention X\" / « mon CV et mes notes de projets ne mentionnent pas X »"),
+                                  (COMMITMENT, "E_UNSOURCED_COMMITMENT", "state a plan only when the candidate gave one "
+                                   "(saved reply); otherwise name the gap and stop, or ask in questions")):
+                m = rx.search(text)
+                if m and not rx.search(said):
+                    self.req(code, "%s: %r is not in the cited candidate sources; %s" % (where, m.group(0), fix))
+
     def check_text_hygiene(self):
         L = self.p.get("letter") or {}
         text = self.cv_text() + "\n" + "\n".join(p.get("text", "") for p in L.get("paragraphs", []))
@@ -1447,6 +1474,238 @@ def compare(a, b):
     return {"letter_similarity": round(ratio, 3), "errors": errors, "warnings": warnings}
 
 
+# Hiring-manager rubric (agents/hiring-manager.md): criterion -> weight. career_bridge exists only for a career change,
+# where coherence weighs double too. Scores are 1-4 with no middle: 1 clear no, 2 rather no, 3 rather yes, 4 clear yes.
+REVIEW_WEIGHTS = {"first_screen": 2, "evidence_strength": 2, "coherence": 1, "level_fit": 1, "company_fit": 2,
+                  "motivation": 1, "objections": 1, "defensibility": 1, "ats_readability": 2, "career_bridge": 2}
+REVIEW_STATUSES = {"evidenced", "transferable", "gap"}
+REVIEW_DECISIONS = {"strong": "invite", "competitive": "hesitate", "long-shot": "decline", "blocked": "decline"}
+FIX_KINDS = {"document", "candidate"}
+Y_KINDS = {"measured", "qualitative"}
+BULLET_PATH = re.compile(r"^cv\.sections\[(\d+)\]\.items\[(\d+)\]\.bullets\[(\d+)\]$")
+# A chance, rate or probability is a prediction the review cannot make: it judges, it never predicts.
+CHANCE = re.compile(r"\b(probabilit|likelihood|chances? (of|d'|de)|odds\b)|\d{1,3}\s*%\s*(de |of )?(chance|réussite|success)"
+                    r"|\b\d{1,3}\s*(/|out of|sur)\s*(10|100)\b", re.I)
+
+
+def review_band(scores, gaps, blocked, career_change):
+    """(band, weighted mean). blocked > strong > competitive > long-shot; a score of 1 caps the band at long-shot."""
+    weights = {k: w * (2 if career_change and k == "coherence" else 1) for k, w in REVIEW_WEIGHTS.items() if k in scores}
+    mean = round(sum(scores[k] * w for k, w in weights.items()) / sum(weights.values()), 2) if weights else 0
+    low = min(scores.values()) if scores else 0
+    if blocked:
+        return "blocked", mean
+    if mean >= 3.5 and low >= 3 and not gaps:
+        return "strong", mean
+    if mean >= 2.75 and low >= 2 and len(gaps) <= 1:
+        return "competitive", mean
+    return "long-shot", mean
+
+
+def hiring_review(pkg, review):
+    """Check the hiring-manager review against the package and compute its band (never taken from the agent).
+    Below `strong` the application is to improve: the review must then carry actions or XYZ rewrites."""
+    errors = []
+    err = lambda code, msg: errors.append({"code": code, "msg": msg})
+    r = review.get("hiring_review") if isinstance(review, dict) else None
+    if not isinstance(r, dict) or not isinstance(r.get("criteria"), list) or not isinstance(r.get("requirements"), list):
+        return {"errors": [{"code": "E_REVIEW", "msg": "hiring_review needs criteria and requirements lists"}]}
+    career = r.get("career_change")
+    if type(career) is not bool:
+        err("E_REVIEW", "career_change must be true or false")
+    expected = [k for k in REVIEW_WEIGHTS if k != "career_bridge" or career is True]
+    ev = {x.get("id"): x for x in pkg.get("evidence") or [] if isinstance(x, dict)}
+    reqs = {x.get("id"): x for x in pkg.get("job", {}).get("requirements") or [] if isinstance(x, dict)}
+    known = {x.get("id") for k in ("sources", "company_claims", "questions") for x in pkg.get(k) or []
+             if isinstance(x, dict)} | set(ev) | set(reqs)
+    known |= {x.get("id") for x in pkg.get("strategy", {}).get("contract_fit") or [] if isinstance(x, dict)}
+    scores = {}
+    for i, c in enumerate(r["criteria"]):
+        where = "hiring_review.criteria[%d]" % i
+        if not isinstance(c, dict) or c.get("id") not in expected or c["id"] in scores:
+            err("E_REVIEW", "%s: id must be one of %s, once each" % (where, ", ".join(expected)))
+            continue
+        if type(c.get("score")) is not int or not 1 <= c["score"] <= 4:
+            err("E_REVIEW", "%s: score must be an integer 1-4" % where)
+            continue
+        scores[c["id"]] = c["score"]
+        if not isinstance(c.get("reason"), str) or not c["reason"].strip():
+            err("E_REVIEW", "%s: reason is required" % where)
+        basis = c.get("basis") if isinstance(c.get("basis"), list) else []
+        if not basis or [b for b in basis if b not in known]:
+            err("E_BAD_REF", "%s: basis %s must cite existing package ids" % (where, basis))
+        fix = c.get("fix")
+        if c["score"] < 4 and (not isinstance(fix, dict) or fix.get("kind") not in FIX_KINDS
+                               or not isinstance(fix.get("text"), str) or not fix["text"].strip()):
+            err("E_REVIEW_FIX", "%s: a score below 4 needs fix {kind: document|candidate, text}" % where)
+    missing = [k for k in expected if k not in scores]
+    if missing:
+        err("E_REVIEW", "criteria missing: %s" % ", ".join(missing))
+    seen, gaps, knockouts = set(), [], []
+    for i, q in enumerate(r["requirements"]):
+        where = "hiring_review.requirements[%d]" % i
+        rid = q.get("id") if isinstance(q, dict) else None
+        if rid not in reqs or rid in seen or q.get("status") not in REVIEW_STATUSES:
+            err("E_REVIEW", "%s: needs a package requirement id (once) and status evidenced|transferable|gap" % where)
+            continue
+        seen.add(rid)
+        match = reqs[rid].get("match") or []
+        if q["status"] == "gap":
+            if reqs[rid].get("level") == "required":
+                gaps.append(rid)
+            if q.get("knockout") is True:
+                knockouts.append(rid)
+            continue
+        if not match or not q.get("basis") or [b for b in q["basis"] if b not in match]:
+            # coverage the package does not record would be an invented match
+            err("E_REVIEW_MATCH", "%s: %s needs basis drawn from the requirement's match %s" % (where, q["status"], match))
+        if q["status"] == "transferable" and not (isinstance(q.get("skill"), str) and q["skill"].strip()):
+            err("E_REVIEW", "%s: transferable needs the skill that carries over" % where)
+    unrated = [k for k, x in reqs.items() if x.get("level") == "required" and k not in seen]
+    if unrated:
+        err("E_REVIEW", "required requirements not rated: %s" % ", ".join(unrated))
+    if not isinstance(r.get("objections"), list):
+        err("E_REVIEW", "objections must be a list (empty if none)")
+    rewrites = r.get("rewrites") if isinstance(r.get("rewrites"), list) else []
+    for i, w in enumerate(rewrites):
+        where = "hiring_review.rewrites[%d]" % i
+        m = BULLET_PATH.match(w.get("target", "")) if isinstance(w, dict) else None
+        try:
+            item = pkg["cv"]["sections"][int(m.group(1))]["items"][int(m.group(2))]
+            bullet = item["bullets"][int(m.group(3))]
+        except (AttributeError, KeyError, IndexError, TypeError):
+            err("E_REVIEW_REWRITE", "%s: target must name an existing CV bullet (cv.sections[i].items[j].bullets[k])"
+                % where)
+            continue
+        cited = w.get("evidence") if isinstance(w.get("evidence"), list) else []
+        allowed = set(bullet.get("evidence") or []) | set(item.get("evidence") or [])
+        if not cited or [e for e in cited if e not in allowed]:
+            # a rewrite rewords its own bullet's evidence, never imports another fact
+            err("E_REVIEW_REWRITE", "%s: evidence %s must come from the bullet's own evidence %s"
+                % (where, cited, sorted(allowed)))
+        after = w.get("after") if isinstance(w.get("after"), str) else ""
+        if not after.strip() or w.get("y") not in Y_KINDS:
+            err("E_REVIEW_REWRITE", "%s: needs after text and y measured|qualitative" % where)
+            continue
+        corpus = " ".join(json.dumps(ev.get(e, {}), ensure_ascii=False) for e in cited)
+        extra = nums(DATE_TEXT.sub(" ", after)) - nums(corpus)
+        if extra:
+            err("E_REVIEW_NUMBER", "%s: figures %s are not in the cited evidence; ask the candidate (question) or "
+                                   "write Y qualitatively" % (where, sorted(extra)))
+        if w["y"] == "measured" and not nums(after):
+            err("E_REVIEW_REWRITE", "%s: y measured needs the attested figure in the text" % where)
+    text = json.dumps(r, ensure_ascii=False)
+    if CHANCE.search(text) or ATS_PROMISE.search(text):
+        err("E_REVIEW_CHANCE", "no percentage, probability or guarantee: the review judges, it does not predict")
+    meta = pkg.get("meta") or {}
+    blocked = knockouts + [k.get("id") for k in pkg.get("strategy", {}).get("contract_fit") or []
+                           if isinstance(k, dict) and k.get("status") == "incompatible" and not meta.get("contract_override")]
+    band, mean = review_band(scores, gaps, blocked, career is True)
+    improve = band != "strong"
+    if improve and not rewrites and not r.get("actions"):
+        err("E_REVIEW_IMPROVE", "band %s is below strong: give targeted actions or XYZ rewrites" % band)
+    low = min(scores.values()) if scores else None
+    decision = REVIEW_DECISIONS[band]
+    if decision == "decline":
+        rejection_errors(r.get("rejection"), scores, set(gaps) | set(knockouts), err)
+    return {"errors": errors, "band": band, "weighted_mean": mean, "scale": "1-4", "improve": improve,
+            "decision": decision, "recommendation": "ask-candidate" if blocked else "apply", "blocked_by": blocked,
+            "required_gaps": gaps, "scores": scores, "weakest": [k for k in scores if scores[k] == low]}
+
+
+def rejection_errors(rej, scores, gap_ids, err):
+    """A simulated manager who would decline explains it, as a real one rarely does: each reason points to a weak
+    criterion (score <= 2) or a missing required requirement, and an ordered plan says how to readjust the CV."""
+    if not isinstance(rej, dict) or not isinstance(rej.get("summary"), str) or not rej["summary"].strip():
+        err("E_REVIEW_REJECTION", "the simulated manager declines: give rejection {summary, reasons, readjust}")
+        return
+    reasons = rej.get("reasons") if isinstance(rej.get("reasons"), list) else []
+    if not reasons:
+        err("E_REVIEW_REJECTION", "rejection.reasons must list why the manager declines")
+    for i, x in enumerate(reasons):
+        ref = x.get("ref") if isinstance(x, dict) else None
+        if not (isinstance(x, dict) and isinstance(x.get("text"), str) and x["text"].strip()) or not (
+                (ref in scores and scores[ref] <= 2) or ref in gap_ids):
+            err("E_REVIEW_REJECTION", "rejection.reasons[%d]: text and ref to a criterion scored 1-2 or a missing "
+                                      "required requirement (%s)" % (i, ref))
+    plan = rej.get("readjust") if isinstance(rej.get("readjust"), list) else []
+    if not plan or [x for x in plan if not isinstance(x, str) or not x.strip()]:
+        err("E_REVIEW_REJECTION", "rejection.readjust must list the CV changes, most effect first")
+
+
+# Real-rejection debrief (references/rejection-debrief.md): the reason stays unknown; causes are ranked hypotheses.
+DEBRIEF_STAGES = {"no-reply", "automatic", "recruiter-screen", "after-interview", "unknown"}
+DEBRIEF_CAUSES = {"knockout", "requirement-gap", "ats-parse", "keywords", "level", "first-screen", "evidence", "company-fit",
+                  "motivation", "coherence", "invisible"}
+POSTING_NOW = {"open", "reposted", "closed", "unverified"}
+CERTAIN = re.compile(r"\b(the (real |actual )?reason (is|was)|(were |was )?rejected because|"
+                     r"la (vraie |véritable )?raison (est|était)|refusée? (car|parce))", re.I)
+
+
+def debrief_check(pkg, data):
+    """Check a rejection debrief against the package of the application that was sent."""
+    errors = []
+    err = lambda code, msg: errors.append({"code": code, "msg": msg})
+    d = data.get("debrief") if isinstance(data, dict) else None
+    if not isinstance(d, dict) or not isinstance(d.get("hypotheses"), list):
+        return {"errors": [{"code": "E_DEBRIEF", "msg": "debrief needs a hypotheses list"}]}
+    rej = d.get("rejection") if isinstance(d.get("rejection"), dict) else {}
+    if rej.get("stage") not in DEBRIEF_STAGES:
+        err("E_DEBRIEF", "rejection.stage must be one of %s" % ", ".join(sorted(DEBRIEF_STAGES)))
+    for k in ("sent", "received"):
+        if rej.get(k) is not None and not (isinstance(rej[k], str) and DATE.match(rej[k])):
+            err("E_DEBRIEF", "rejection.%s must be YYYY-MM-DD or null" % k)
+    if d.get("posting_now") not in POSTING_NOW:
+        err("E_DEBRIEF", "posting_now must be one of %s" % ", ".join(sorted(POSTING_NOW)))
+    known = {x.get("id") for k in ("sources", "company_claims", "evidence", "questions") for x in pkg.get(k) or []
+             if isinstance(x, dict)}
+    known |= {x.get("id") for x in pkg.get("job", {}).get("requirements") or [] if isinstance(x, dict)}
+    known |= set(REVIEW_WEIGHTS)
+    ranks = []
+    for i, h in enumerate(d["hypotheses"]):
+        where = "debrief.hypotheses[%d]" % i
+        if not isinstance(h, dict) or h.get("cause") not in DEBRIEF_CAUSES or type(h.get("rank")) is not int:
+            err("E_DEBRIEF", "%s: cause (%s) and integer rank required" % (where, ", ".join(sorted(DEBRIEF_CAUSES))))
+            continue
+        ranks.append(h["rank"])
+        for k in ("for", "against"):
+            if not isinstance(h.get(k), list) or [x for x in h[k] if not isinstance(x, str)]:
+                err("E_DEBRIEF", "%s.%s must be a list of signals (empty if none)" % (where, k))
+        if h["cause"] != "invisible":
+            basis = h.get("basis") if isinstance(h.get("basis"), list) else []
+            if not h.get("for") or not basis or [b for b in basis if b not in known]:
+                err("E_DEBRIEF_BASIS", "%s: a cause needs signals for it and basis ids from the package or the "
+                                       "rubric criteria (%s)" % (where, basis))
+            if not isinstance(h.get("action"), str) or not h["action"].strip():
+                err("E_DEBRIEF", "%s: action (how to readjust) is required" % where)
+    if sorted(ranks) != list(range(1, len(ranks) + 1)):
+        err("E_DEBRIEF", "ranks must run 1..%d without ties" % len(ranks))
+    if not d["hypotheses"]:
+        err("E_DEBRIEF", "at least one hypothesis")
+    if not isinstance(d.get("feedback_request"), str) or not d["feedback_request"].strip():
+        err("E_DEBRIEF", "feedback_request: a short draft asking the recruiter for feedback (never sent by the skill)")
+    text = json.dumps(d, ensure_ascii=False)
+    if CERTAIN.search(text):
+        err("E_DEBRIEF_CERTAIN", "the real reason is unknown: state causes as hypotheses, never as the reason")
+    if CHANCE.search(text) or ATS_PROMISE.search(text):
+        err("E_REVIEW_CHANCE", "no percentage, probability or guarantee")
+    top = sorted((h for h in d["hypotheses"] if isinstance(h, dict) and type(h.get("rank")) is int),
+                 key=lambda h: h["rank"])
+    return {"errors": errors, "top": [h.get("cause") for h in top[:3]]}
+
+
+def debrief_patterns(debriefs):
+    """Causes ranked in the top 3 of at least two debriefs: what to fix before the next applications."""
+    seen = {}
+    for name, d in debriefs:
+        hyps = (d.get("debrief") or {}).get("hypotheses") if isinstance(d, dict) else None
+        for h in hyps if isinstance(hyps, list) else []:
+            if isinstance(h, dict) and type(h.get("rank")) is int and h["rank"] <= 3 and h.get("cause") != "invisible":
+                seen.setdefault(h.get("cause"), set()).add(name)
+    return [{"cause": c, "debriefs": sorted(n)} for c, n in sorted(seen.items(), key=lambda x: str(x[0]))
+            if len(n) >= 2]
+
+
 def load_json(path):
     with open(path, encoding="utf-8-sig") as f:
         return json.load(f)
@@ -1462,6 +1721,9 @@ def main(argv=None):
     ap.add_argument("--verdicts", nargs="+", metavar="FILE",
                     help="application-auditor verdicts JSON to check against the targets; with several files "
                          "(audit rounds, any order), the verdict on the current statement is used")
+    ap.add_argument("--review", metavar="FILE", help="hiring-manager review JSON: check it and compute its band")
+    ap.add_argument("--debrief", nargs="+", metavar="FILE",
+                    help="rejection debrief JSON for this package, then earlier debriefs to find recurring causes")
     a = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):  # a redirected Windows console would otherwise write cp1252
         sys.stdout.reconfigure(encoding="utf-8")
@@ -1532,6 +1794,24 @@ def main(argv=None):
                 out["warnings"] = out["warnings"] + cmp_["warnings"]
         except (OSError, ValueError) as exc:
             au.err("E_STRUCTURE", "%s: %s" % (a.compare, exc))
+    if a.review:
+        try:
+            rev = hiring_review(safe_pkg, load_json(a.review))
+        except (OSError, ValueError) as exc:
+            rev = {"errors": [{"code": "E_STRUCTURE", "msg": "%s: %s" % (a.review, exc)}]}
+        out["review"] = rev
+        out["errors"] = out["errors"] + rev["errors"]
+    if a.debrief:
+        loaded = []
+        for f in a.debrief:
+            try:
+                loaded.append((f, load_json(f)))
+            except (OSError, ValueError) as exc:
+                out["errors"] = out["errors"] + [{"code": "E_STRUCTURE", "msg": "%s: %s" % (f, exc)}]
+        if loaded:  # the first file is this package's debrief; the others are earlier rejections, for patterns
+            out["debrief"] = debrief_check(safe_pkg, loaded[0][1])
+            out["errors"] = out["errors"] + out["debrief"]["errors"]
+            out["debrief"]["patterns"] = debrief_patterns(loaded)
     out["ok"] = not out["errors"]
     print(json.dumps(out, indent=2, ensure_ascii=False))
     return 0 if out["ok"] else 1

@@ -166,7 +166,7 @@
     },
     {
       "target": "letter.paragraphs[3]",
-      "fingerprint": "4e547f99d53e413f",
+      "fingerprint": "0f017addf76b8b80",
       "verdict": "supported",
       "source": "S6",
       "excerpt": "Docker: used for local development only; the app was never deployed with Kubernetes."

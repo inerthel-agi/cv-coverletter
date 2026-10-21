@@ -736,7 +736,7 @@
         "addresses_gap": false
       },
       {
-        "text": "I have not worked inside a formal code review process, and I have no Azure experience. My nearest practice is AltCheck, which runs on pull requests. In my first weeks I would read the team's review standards, ask for feedback on small pull requests and learn the shared pipeline before taking on larger features.",
+        "text": "My CV and project notes do not mention a formal code review process or Azure. My nearest practice is AltCheck, which runs on pull requests.",
         "claims": [
           "C4"
         ],

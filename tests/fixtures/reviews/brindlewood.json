@@ -1,0 +1,35 @@
+{
+  "hiring_review": {
+    "reader": "engineering lead of the routing team (fictitious), first read of CV then letter",
+    "career_change": false,
+    "criteria": [
+      {"id": "first_screen", "score": 4, "reason": "Headline names backend Python, FastAPI and SQL; RouteWise, a used routing project, comes first.", "basis": ["R1", "E1"]},
+      {"id": "evidence_strength", "score": 3, "reason": "RouteWise is used and dated; its survey result sits in the third bullet, not the first.", "basis": ["E1"],
+       "fix": {"kind": "document", "text": "Lead RouteWise with the XYZ rewrite below."}},
+      {"id": "coherence", "score": 4, "reason": "Studies, library IT support and teaching assistant roles lead to backend work without unexplained gaps.", "basis": ["E4", "E5", "E6"]},
+      {"id": "level_fit", "score": 4, "reason": "Junior posting, recent graduate with one used project.", "basis": ["E1", "E6"]},
+      {"id": "company_fit", "score": 4, "reason": "Letter ties RouteWise to the Lanes API the company launched.", "basis": ["C2", "R1"]},
+      {"id": "motivation", "score": 3, "reason": "Why routing is clear; why this team over another routing company is thin.", "basis": ["C1", "C2"],
+       "fix": {"kind": "document", "text": "Link the opening to the Lanes API launch (C2) in one sentence."}},
+      {"id": "objections", "score": 3, "reason": "Kubernetes is required and absent from the CV and project notes.", "basis": ["R5"],
+       "fix": {"kind": "document", "text": "Interview point: name the gap and the Docker local setup of RouteWise (E1)."}},
+      {"id": "defensibility", "score": 4, "reason": "Each bullet maps to a project or role the candidate can walk through.", "basis": ["E1", "E3"]},
+      {"id": "ats_readability", "score": 4, "reason": "Standard sections; Python, SQL and REST appear in Skills and in the bullets that prove them.", "basis": ["R1", "R2", "R3"]}
+    ],
+    "requirements": [
+      {"id": "R1", "status": "evidenced", "basis": ["E1"]},
+      {"id": "R2", "status": "evidenced", "basis": ["E1", "E5"]},
+      {"id": "R3", "status": "evidenced", "basis": ["E1"]},
+      {"id": "R4", "status": "transferable", "basis": ["E3"], "skill": "Git workflow through a GitHub Action on pull requests"},
+      {"id": "R5", "status": "gap", "knockout": false},
+      {"id": "R6", "status": "gap"},
+      {"id": "R7", "status": "evidenced", "basis": ["E1"]}
+    ],
+    "objections": [{"text": "No Kubernetes experience.", "answer": "Docker for local development in RouteWise; Kubernetes stays a declared gap.", "basis": ["R5", "E1"]}],
+    "rewrites": [
+      {"target": "cv.sections[1].items[0].bullets[0]", "evidence": ["E1"], "y": "measured",
+       "after": "Cut route planning time per shift from about 25 to about 10 minutes for 4 volunteer coordinators (their survey, 3-week pilot) by building the backend API and route-batching heuristic in Python and FastAPI"}
+    ],
+    "actions": [{"kind": "document", "text": "Keep RouteWise first."}]
+  }
+}

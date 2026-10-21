@@ -25,6 +25,7 @@ company fact is sourced and dated or labelled as a hypothesis; every candidate c
 | `package` | CV + letter + dossier + interview points | everything |
 | `projects` | advice on which projects to show, no package | not run |
 | `audit` | review of existing documents, no package | not run; `check_docs.py` extraction only |
+| `debrief` | after a rejection: ranked causes, why the simulated manager would decline, CV readjustment plan, feedback request draft | `--review` and `--debrief` on the sent version |
 
 Market and language are separate settings. The market sets paper and conventions: `US` (US Letter, no photo),
 `FR` (A4, degree / availability / alternance when known), `INTERNATIONAL` (paper of the job's country, A4 if
@@ -44,6 +45,7 @@ which package content), `targets.json` and `audit.json` (statements checked by t
 | Candidate evidence | `.claude/agents/candidate-evidence.md` | Read, WebFetch (read-only) |
 | Positioning + adaptation per lever | `.claude/agents/recruitment-strategist.md` | Read (read-only) |
 | Writing + files | `.claude/skills/cv-ats-us/SKILL.md` + `scripts/` | main session |
+| Hiring-manager read (1–4 rubric, band, XYZ rewrites, explained decline) | `.claude/agents/hiring-manager.md` | Read (read-only) |
 | Independent audit | `.claude/agents/application-auditor.md` | Read, WebFetch (read-only) |
 
 Model policy: a large model orchestrates, subagents run small — Claude Code agents use `model: haiku`
@@ -55,7 +57,16 @@ Model policy: a large model orchestrates, subagents run small — Claude Code ag
   contribution sized to the contract, level assessment, questions), warnings for older packages.
   `--targets FILE` lists the statements `application-auditor` must judge; `--verdicts audit.json` checks that
   every target got a `supported` verdict quoting meaningful source text verbatim (a question or technical note may be
-  neutral). Targets cover every text of the CV (named by position), letter, interview and dossier; conflicting
+  neutral). `--review review.json` checks the `hiring-manager` review (nine 1–4 criteria, plus `career_bridge`
+  in a career change; each required requirement rated against the package's matches; XYZ rewrites keep their
+  bullet's evidence and figures; no percentage) and computes a weighted mean and a band: `strong`,
+  `competitive`, `long-shot` (all: apply; below `strong`, improve) or `blocked` (knockout or incompatible
+  contract: ask the candidate). When the band means a decline (`long-shot`, `blocked`), the review must explain
+  it: reasons tied to a criterion scored 1–2 or a missing required requirement, and an ordered readjustment plan.
+  `--debrief debrief.json [earlier.json …]` checks a rejection debrief (ranked hypotheses with signals for and
+  against, package ids, an action each, a feedback request draft; certainty, percentages and probabilities are
+  refused) and lists `patterns`: causes in the top 3 of two or more debriefs.
+  Targets cover every text of the CV (named by position), letter, interview and dossier; conflicting
   current verdicts are refused in any order; so are empty CV sections and invalid generation settings.
 - `build_docs.py`: DOCX + PDF and `build.json`; refuses a PDF whose text the standard PDF font cannot show.
 - `check_docs.py`: layout (including hidden properties in applicable styles), two-way text extraction, and
@@ -71,7 +82,7 @@ References and university sources: `.claude/skills/cv-ats-us/references/`.
   `--check` also reports orphan TOML files after a source agent is retired; it never removes them.
 - Codex only loads `.codex/` for **trusted** projects: accept the trust prompt when opening this folder in
   Codex, or add `[projects."<this folder>"] trust_level = "trusted"` to `~/.codex/config.toml`.
-  Untrusted, the skill still loads but the five agents do not.
+  Untrusted, the skill still loads but the six agents do not.
 - Web search inside Codex subagents depends on your `web_search` setting (not documented for subagents).
 - Windows: `SKILL.md` and `.agents/skills/cv-ats-us` are symlinks. With `core.symlinks=false` (the default
   without Developer Mode) git writes them as small text files and Codex cannot load the skill; `run_tests.py`
