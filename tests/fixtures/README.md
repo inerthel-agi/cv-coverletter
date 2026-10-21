@@ -1,6 +1,6 @@
 # Test fixtures — all FICTITIOUS
 
-Person, companies, URLs (`.example`, `.invalid`), phone (`555-01xx`) and email (`example.com`) are invented.
+Person, companies, URLs (`.example`, `.invalid`), phone (`555` numbers) and email (`example.com`) are invented.
 Never add real candidate data here.
 
 | Scenario | Fixture |
@@ -11,6 +11,9 @@ Never add real candidate data here.
 | (d) project without metrics | ShelfScan (`candidate/projects.md`) |
 | (e) unreachable site | Quarrelane posting URL on `.invalid` → `reachable: false`, pasted copy used, warning raised |
 | (f) structured CV/letter + DOCX/PDF extraction | every package, built by `build_docs.py`, checked by `check_docs.py` |
+| (h) hiring-manager review | `reviews/brindlewood.json`: band `competitive` (weighted mean 3.69 on 1–4, one required gap R5) with one XYZ rewrite of a RouteWise bullet; `run_tests.py` mutates it to reach `strong`, `long-shot` and `blocked`, a career-change variant, and to reject invented matches, borrowed evidence, invented figures, missing fixes and percentages |
+| (i) rejection debrief | `debriefs/brindlewood.json` (automatic rejection, ranked hypotheses: requirement gap, knockout, invisible) and `debriefs/earlier-rejection.json`: the pattern `requirement-gap` recurs; `run_tests.py` also forces a simulated decline that must be explained |
+| (j) career change, finance → IT (FR) | `candidate/sacha-morel-cv.md` and `candidate/sacha-morel-projects.md`: quant analyst moving to backend or data engineering; measured run time from job logs, a personal deployed pipeline, an open-source contribution, Kubernetes only as a training exercise, C++ coursework only, an intern supervised (scope to keep exact) |
 | (g) company types, same title | `brindlewood` startup (team of 18, first junior hires), `halvane` mid-size (about 420 staff, product teams), `tamberlin` SME (45 staff, first in-house engineer), `orvanta` multinational (letter written to the Orvanta Digital unit), `quarrelane` unknown (its SMEs are customers) |
 
 `packages/*.json` are reference outputs ("golden", `meta.schema: 2`): they must pass `audit_package.py` and
@@ -37,3 +40,8 @@ note and the two question rationales name the documents an absence was checked a
 statement, same quotation), 5 were re-issued because the R7 note is part of their references (`job.requirement:R7`,
 `strategy.adaptation[1]`, both gaps, differentiation; statements unchanged), and 5 were added: `questions[0].ask`
 judged neutral (it takes no fact for granted) and four quotations found verbatim in an allowed source.
+
+Absence wording update (2026-10-21): the gap sentences of the five reference letters (and two Tamberlin
+interview items) now state what the documents show ("my CV and project notes do not mention X") instead of "I have
+not…", and their unsourced learning plans were removed (`E_ABSENCE_AS_FACT`, `E_UNSOURCED_COMMITMENT`). Only the
+`letter.paragraphs[3]` verdict of `verdicts/brindlewood.json` was re-issued (new fingerprint, same excerpt).

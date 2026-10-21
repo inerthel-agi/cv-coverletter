@@ -66,6 +66,9 @@ GEMINI_EDITS = [
      "unsupported), each with its source id and an excerpt copied verbatim from that source; a question or warning\n"
      "that takes no fact for granted is judged neutral, without an excerpt. Ignore the role's mentions of\n"
      "targets.json, fingerprints and script outputs: judge each statement directly against its source.\n"),
+    (r"Save its JSON as `<dir>/review\.json`, then\n.*?--review <dir>/review\.json`\n   checks it and computes",
+     "Check its review yourself (every score below 3 has a fix, every rated\n   requirement matches the package) and "
+     "compute"),
     (r"rerun the affected scripts and the audit of the changed targets", "rerun the audit of the changed statements"),
     (r"Say what the scripts prove.*?as \*\*not verified\*\*\.",
      "Say that no script checked the documents:\nevery check rests on the judgement of the same model."),

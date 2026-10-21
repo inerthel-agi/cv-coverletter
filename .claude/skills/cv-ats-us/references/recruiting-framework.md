@@ -10,6 +10,7 @@ Principle: understand **why the company is hiring** before writing anything.
 | 3 | `candidate-evidence` | evidence cards with verbatim excerpts and stated levels + availability + gaps + questions |
 | 4 | `recruitment-strategist` | contract fit (stop if incompatible), hiring context, matrix, level match, value proposition, 1–3 arguments, `adaptation` per lever, contribution sized to the contract, ranked questions, differentiation test |
 | 5 | main skill | `package.json` → DOCX/PDF + dossier |
+| 5b | `hiring-manager` | 1–4 weighted rubric, requirement ratings, transferable skills, objections, fixes and XYZ rewrites → band computed by `audit_package.py --review`; below `strong`, improve (≤ 2 rounds) |
 | 6 | `application-auditor` | one verdict per target (`--targets`), verbatim excerpts, blocking / non-blocking findings |
 
 Steps 1–3 are independent: run them in parallel. Step 4 needs all three.
@@ -40,7 +41,7 @@ with limited research, say so and personalise from the posting.
 | `audit` of existing documents | `application-auditor` (+ `company-researcher` only to verify company claims) |
 | `projects` (which projects to show) | `candidate-evidence` (+ `job-intelligence` if a posting is given) |
 | `create` without a target posting | `candidate-evidence` |
-| `tailor`, `cover-letter`, `package` | all five |
+| `tailor`, `cover-letter`, `package` | all six |
 | Choosing between several postings | not a mode yet: analyse each posting separately |
 
 ## Interview argument (dossier)

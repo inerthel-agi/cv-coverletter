@@ -10,7 +10,9 @@ color: purple
 You decide what the application should argue. You write no final documents.
 
 ## Inputs
-The three notes (inline or as file paths). Use nothing else; if a fact is missing, say so.
+The three notes (inline or as file paths) and, after a rejection, earlier `debrief.json` files: weigh their
+top-ranked causes and recurring patterns as hypotheses when choosing the adaptation. Use nothing else; if a
+fact is missing, say so.
 
 ## Method
 0. Contract fit before anything else: compare `job.contract` and required languages with the candidate's

@@ -751,7 +751,7 @@
         ]
       },
       {
-        "text": "I want to be direct about one gap: I have not deployed services on Kubernetes. I have used Docker only for local development on RouteWise, so learning your deployment workflow would be one of my first goals, with code review from the team.",
+        "text": "I want to be direct about one gap: my CV and project notes do not mention deploying services on Kubernetes. I have used Docker only for local development on RouteWise.",
         "claims": [],
         "evidence": [
           "E1"

@@ -128,7 +128,7 @@ COMPANY_TYPES = {"brindlewood": {"startup"}, "halvane": {"mid-size"}, "tamberlin
 US_SAME_TITLE = ["brindlewood", "halvane", "tamberlin", "orvanta"]
 
 AGENTS = ["company-researcher", "job-intelligence", "candidate-evidence", "recruitment-strategist",
-          "application-auditor"]
+          "hiring-manager", "application-auditor"]
 
 
 def events(name):
@@ -219,7 +219,7 @@ def validate(name):
         ok("never opened the reference packages", not peeks, "%d tool calls touched them" % len(peeks))
     calls = delegations(name)
     if calls is not None:
-        ok("all 5 agents delegated, strategist before auditor", set(AGENTS) <= set(calls) and
+        ok("all 6 agents delegated, strategist before auditor", set(AGENTS) <= set(calls) and
            calls.index("recruitment-strategist") < calls.index("application-auditor"), calls)
         ok("strategist called before the first write", strategy_before_writing(name))
 

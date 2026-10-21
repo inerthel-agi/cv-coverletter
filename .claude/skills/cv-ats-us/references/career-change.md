@@ -1,6 +1,7 @@
 # Career change (reconversion)
 
 Applies when the candidate's past job titles do not name the target role (e.g. logistics → data analyst).
+A student or recent graduate in the target field whose past jobs were student or side jobs is not a career change.
 Project guidance, not a university rule; the posting's explicit requirements still win.
 
 ## Where the ATS risk really is
@@ -31,9 +32,18 @@ Standard titles only: "Projects" / "Projets", "Relevant Experience" / "Other Exp
 
 ## Letter
 One sentence on the pivot: what moved the candidate, then the evidence that the move is already under way
-(project, training, result). No apology, no "despite my lack of experience". The gap paragraph rules of
+(project, training, result). No apology, no "despite my lack of experience", no "I have never…": a missing
+skill is what the documents do not mention. The gap paragraph rules of
 [project-evidence.md](project-evidence.md) apply.
 
 ## Strategy fields
 `recruitment-strategist` records the pivot in the `positioning` lever and the chosen section order in the
 `experience` and `projects` levers, each with its `basis` ids.
+
+## Hiring-manager review
+`hiring-manager` reads a reconversion as a manager would: why this move, why now, what is already done in the
+new field, what carries over. It sets `career_change: true`, which adds the `career_bridge` criterion and doubles
+the weight of `coherence`. It lists transferable skills, relevant past work and achievements worth showing even
+under an unrelated title, and rewrites their bullets in the target field's terms (XYZ, same evidence). A pivot
+explained and under way scores as coherent; the career change itself is never a penalty and is never hidden.
+A `long-shot` band still means apply, with the fixes that give the application its best chance.

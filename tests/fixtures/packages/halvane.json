@@ -735,7 +735,7 @@
         ]
       },
       {
-        "text": "ShelfScan, my computer vision course project, is a prototype rather than a product. I built OpenCV preprocessing and trained a PyTorch model that counts products on shelf photos, using a public dataset, and I never formally measured its accuracy. It taught me how much work separates a classroom model from a store pilot, which is why ShelfSight interests me.",
+        "text": "ShelfScan, my computer vision course project, is a prototype rather than a product. I built OpenCV preprocessing and trained a PyTorch model that counts products on shelf photos, using a public dataset; its accuracy was not formally measured. It taught me how much work separates a classroom model from a store pilot, which is why ShelfSight interests me.",
         "claims": [
           "C2"
         ],

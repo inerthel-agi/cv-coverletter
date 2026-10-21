@@ -683,7 +683,7 @@
         ]
       },
       {
-        "text": "I have not used Microsoft Power Automate, which the posting lists as preferred. My closest experience is scripting: the reservation script replaced a hand-compiled report, and RouteWise groups delivery stops into routes, work the coordinators had done by hand. I would learn Power Automate on one small intake task and test the flow before anyone relies on it.",
+        "text": "My CV and project notes do not mention Microsoft Power Automate, which the posting lists as preferred. My closest experience is scripting: the reservation script replaced a hand-compiled report, and RouteWise groups delivery stops into routes, work the coordinators had done by hand.",
         "claims": [
           "C4"
         ],
@@ -710,7 +710,7 @@
   "interview": [
     {
       "question": "How would you start on the order intake that still runs by hand?",
-      "talking_points": "Email orders are still entered by hand and the plan is to connect both channels by mid-2027. I have not built an intake flow. Start by mapping one email order to the production-schedule fields, then script the repetitive step, as I did for the reservation report.",
+      "talking_points": "Email orders are still entered by hand and the plan is to connect both channels by mid-2027. My CV and project notes show no intake flow. Start by mapping one email order to the production-schedule fields, then script the repetitive step, as I did for the reservation report.",
       "evidence": [
         "E4"
       ],
@@ -720,7 +720,7 @@
     },
     {
       "question": "Which preferred skill in the posting do you lack, and how would you close the gap?",
-      "talking_points": "Microsoft's automation tool, which I have not used. Nearest evidence: the scripted reservation report and the REST endpoints in RouteWise. Ramp-up: learn it on one small intake task and test the flow before anyone relies on it.",
+      "talking_points": "Microsoft's automation tool, which my CV and project notes do not mention. Nearest evidence: the scripted reservation report and the REST endpoints in RouteWise. Ramp-up plan: only the one the candidate gives.",
       "evidence": [
         "E4",
         "E1"

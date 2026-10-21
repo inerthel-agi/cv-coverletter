@@ -30,7 +30,7 @@ import check_docs  # noqa: E402
 import run_e2e  # noqa: E402
 
 AGENT_NAMES = ["company-researcher", "job-intelligence", "candidate-evidence", "recruitment-strategist",
-               "application-auditor"]
+               "hiring-manager", "application-auditor"]
 WRITE_TOOLS = {"Write", "Edit", "NotebookEdit", "Bash", "PowerShell", "Agent"}
 MODELS = {"inherit", "sonnet", "opus", "haiku", "fable"}
 PACKAGES = ["brindlewood", "halvane", "tamberlin", "orvanta", "quarrelane"]
@@ -178,8 +178,150 @@ class ConfigTests(unittest.TestCase):
             for script in re.findall(r"\$\{CLAUDE_SKILL_DIR\}/(scripts/[\w.]+)", text):
                 self.assertTrue(os.path.exists(os.path.join(SKILL, script)), script)
         for ref in ("university-guidelines", "ats-and-layout", "recruiting-framework", "project-evidence",
-                    "cover-letter", "source-policy", "package-format", "company-context", "career-change"):
+                    "cover-letter", "source-policy", "package-format", "company-context", "career-change",
+                    "rejection-debrief"):
             self.assertTrue(os.path.exists(os.path.join(SKILL, "references", ref + ".md")), ref)
+
+    def test_hiring_review_band_and_guards(self):
+        """The band comes from 1-4 weighted scores, locks and the package's coverage, never from the agent; below
+        strong the review must carry improvements, and XYZ rewrites keep their bullet's evidence and figures."""
+        pkg = load("brindlewood")
+        path = os.path.join(ROOT, "tests", "fixtures", "reviews", "brindlewood.json")
+        base = json.loads(read(path))
+        res = audit_package.hiring_review(pkg, base)
+        self.assertEqual((res["errors"], res["band"], res["weighted_mean"], res["required_gaps"], res["improve"]),
+                         ([], "competitive", 3.69, ["R5"], True))
+
+        def run(mutate, package=pkg):
+            r = json.loads(json.dumps(base))
+            mutate(r["hiring_review"])
+            res = audit_package.hiring_review(package, r)
+            return res, {e["code"] for e in res["errors"]}
+        crit = lambda r, name: next(c for c in r["criteria"] if c["id"] == name)
+        no_r5 = json.loads(json.dumps(pkg))
+        no_r5["job"]["requirements"][4]["level"] = "preferred"
+        res, codes = run(lambda r: None, no_r5)
+        self.assertEqual((res["band"], res["improve"], codes), ("strong", False, set()))
+
+        def one_low(r):  # a score of 1 caps the band at long-shot whatever the mean
+            crit(r, "motivation")["score"] = 1
+        self.assertEqual(run(one_low)[0]["band"], "long-shot")
+        self.assertEqual(run(lambda r: r["requirements"][4].update(knockout=True))[0]["band"], "blocked")
+
+        def pivot(r):  # career change: career_bridge required, coherence weighs double
+            r["career_change"] = True
+            r["criteria"].append({"id": "career_bridge", "score": 2, "reason": "Pivot stated, bridge thin.",
+                                  "basis": ["E4"], "fix": {"kind": "document", "text": "Rewrite E4 in target terms."}})
+        res, codes = run(pivot)
+        self.assertEqual((codes, res["weighted_mean"]), (set(), 3.5))
+        self.assertIn("E_REVIEW", run(lambda r: r.update(career_change=True))[1], "career_bridge missing")
+        self.assertIn("E_REVIEW", run(lambda r: pivot(r) or r.update(career_change=False))[1], "bridge without pivot")
+
+        rw = lambda **kw: lambda r: r["rewrites"][0].update(kw)
+        self.assertIn("E_REVIEW_REWRITE", run(rw(evidence=["E4"]))[1], "borrowed another card's evidence")
+        self.assertIn("E_REVIEW_REWRITE", run(rw(target="cv.sections[9].items[0].bullets[0]"))[1])
+        self.assertIn("E_REVIEW_NUMBER", run(rw(after="Cut planning time by 60 minutes for 4 coordinators"))[1])
+        self.assertEqual(run(rw(y="qualitative", after="Gave volunteer coordinators a planning tool they used during "
+                                                         "the pilot by building the backend API"))[1], set())
+        self.assertIn("E_REVIEW_IMPROVE", run(lambda r: r.update(rewrites=[], actions=[]))[1])
+
+        def invented(r):
+            r["requirements"][4] = {"id": "R5", "status": "transferable", "basis": ["E1"], "skill": "Docker"}
+        self.assertIn("E_REVIEW_MATCH", run(invented)[1], "R5 has no match: coverage would be invented")
+        self.assertIn("E_REVIEW", run(lambda r: r["requirements"][3].pop("skill"))[1])
+        self.assertIn("E_REVIEW_FIX", run(lambda r: crit(r, "objections").pop("fix"))[1])
+        self.assertIn("E_REVIEW", run(lambda r: crit(r, "coherence").update(score=0))[1])
+        self.assertIn("E_REVIEW_CHANCE", run(lambda r: r["actions"].append(
+            {"kind": "document", "text": "About 30% chance of an interview."}))[1])
+        self.assertIn("E_REVIEW", run(lambda r: r["requirements"].pop(0))[1])
+        self.assertIn("E_BAD_REF", run(lambda r: crit(r, "coherence").update(basis=["E99"]))[1])
+        r = subprocess.run([sys.executable, os.path.join(SCRIPTS, "audit_package.py"), os.path.join(PKGS, "brindlewood.json"),
+                            "--review", path], capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertEqual(json.loads(r.stdout)["review"]["recommendation"], "apply")
+        self.assertIn("--review", read(os.path.join(SKILL, "SKILL.md")))
+        self.assertIn("XYZ rewrite", read(os.path.join(SKILL, "references", "project-evidence.md")))
+
+    def test_simulated_rejection_is_explained(self):
+        """When the simulated manager would decline, it says why (weak criteria or required gaps) and how to readjust."""
+        pkg = load("brindlewood")
+        base = json.loads(read(os.path.join(ROOT, "tests", "fixtures", "reviews", "brindlewood.json")))
+        r = base["hiring_review"]
+        res = audit_package.hiring_review(pkg, base)
+        self.assertEqual(res["decision"], "hesitate")
+        motivation = next(c for c in r["criteria"] if c["id"] == "motivation")
+        motivation["score"] = 1  # long-shot: the manager declines
+        codes = {e["code"] for e in audit_package.hiring_review(pkg, base)["errors"]}
+        self.assertIn("E_REVIEW_REJECTION", codes, "a decline without an explanation")
+        r["rejection"] = {"summary": "The letter does not say why this team. Kubernetes is required and absent.",
+                          "reasons": [{"ref": "motivation", "text": "Opening paragraph gives no reason for Brindlewood."},
+                                      {"ref": "R5", "text": "Required Kubernetes deployment is not in the CV."}],
+                          "readjust": ["Open the letter on the Lanes API launch (C2).", "Keep Kubernetes a declared gap."]}
+        res = audit_package.hiring_review(pkg, base)
+        self.assertEqual((res["decision"], res["errors"]), ("decline", []))
+        r["rejection"]["reasons"].append({"ref": "first_screen", "text": "Headline is weak."})  # scored 4: not a reason
+        self.assertIn("E_REVIEW_REJECTION", {e["code"] for e in audit_package.hiring_review(pkg, base)["errors"]})
+        r["rejection"]["reasons"].pop()
+        r["rejection"]["readjust"] = []
+        self.assertIn("E_REVIEW_REJECTION", {e["code"] for e in audit_package.hiring_review(pkg, base)["errors"]})
+
+    def test_rejection_debrief_ranks_hypotheses_never_a_reason(self):
+        pkg = load("brindlewood")
+        folder = os.path.join(ROOT, "tests", "fixtures", "debriefs")
+        path, earlier = os.path.join(folder, "brindlewood.json"), os.path.join(folder, "earlier-rejection.json")
+        base = json.loads(read(path))
+        res = audit_package.debrief_check(pkg, base)
+        self.assertEqual((res["errors"], res["top"]), ([], ["requirement-gap", "knockout", "invisible"]))
+
+        def run(mutate):
+            d = json.loads(json.dumps(base))
+            mutate(d["debrief"])
+            return {e["code"] for e in audit_package.debrief_check(pkg, d)["errors"]}
+        h = lambda i, **kw: lambda d: d["hypotheses"][i].update(kw)
+        self.assertIn("E_DEBRIEF_CERTAIN", run(h(0, action="The reason was Kubernetes; add it.")))
+        self.assertIn("E_DEBRIEF_CERTAIN", run(h(0, action="Candidature refusée car il manque Kubernetes.")))
+        self.assertIn("E_DEBRIEF_BASIS", run(h(0, basis=["R99"])))
+        self.assertIn("E_DEBRIEF_BASIS", run(h(1, **{"for": []})), "a cause needs a signal for it")
+        self.assertIn("E_DEBRIEF", run(h(1, rank=1)), "tied ranks")
+        self.assertIn("E_DEBRIEF", run(h(0, cause="bad-luck")))
+        self.assertIn("E_DEBRIEF", run(lambda d: d["rejection"].update(stage="ghosted")))
+        self.assertIn("E_DEBRIEF", run(lambda d: d.pop("feedback_request")))
+        self.assertIn("E_REVIEW_CHANCE", run(h(0, action="Raises your odds of an interview.")))
+        self.assertEqual(run(h(2, basis=[])), set(), "an invisible cause needs no basis")
+        self.assertEqual(audit_package.debrief_patterns([(path, base), (earlier, json.loads(read(earlier)))]),
+                         [{"cause": "requirement-gap", "debriefs": sorted([path, earlier])}])
+        out = subprocess.run([sys.executable, os.path.join(SCRIPTS, "audit_package.py"), os.path.join(PKGS, "brindlewood.json"),
+                              "--debrief", path, earlier], capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(out.returncode, 0, out.stdout)
+        self.assertEqual([p["cause"] for p in json.loads(out.stdout)["debrief"]["patterns"]], ["requirement-gap"])
+        self.assertIn("references/rejection-debrief.md", read(os.path.join(SKILL, "SKILL.md")))
+
+    def test_absences_are_about_documents_and_plans_need_a_source(self):
+        """'I have never used X' and an invented learning plan are refused; 'my CV and notes do not mention X' passes."""
+        def codes(mutate, name="brindlewood"):
+            p = load(name)
+            mutate(p)
+            return set(audit(p)[0])
+        gap = lambda text: lambda p: p["letter"]["paragraphs"][3].__setitem__("text", text)
+        base = load("brindlewood")["letter"]["paragraphs"][3]["text"]
+        self.assertFalse(codes(lambda p: None) & {"E_ABSENCE_AS_FACT", "E_UNSOURCED_COMMITMENT"})
+        self.assertIn("E_ABSENCE_AS_FACT", codes(gap(base.replace(
+            "my CV and project notes do not mention deploying", "I have not deployed"))))
+        self.assertIn("E_ABSENCE_AS_FACT", codes(lambda p: p["interview"][0].__setitem__(
+            "question", "You have never deployed to Kubernetes: how would you start?")))
+        self.assertIn("E_UNSOURCED_COMMITMENT", codes(gap(base + " I will learn Kubernetes in my first month.")))
+        q = load("quarrelane")["letter"]["paragraphs"][3]["text"]
+        self.assertIn("E_ABSENCE_AS_FACT", codes(lambda p: p["letter"]["paragraphs"][3].__setitem__(
+            "text", q.replace("mon CV et mes notes de projets ne mentionnent pas pandas", "je n'ai pas encore utilisé pandas")),
+            "quarrelane"))
+
+        def said_by_candidate(p):  # a saved reply that says it in the candidate's words makes it a sourced statement
+            p["evidence"][0]["excerpts"].append("I have not deployed services on Kubernetes.")
+            gap(base.replace("my CV and project notes do not mention deploying", "I have not deployed"))(p)
+        self.assertNotIn("E_ABSENCE_AS_FACT", codes(said_by_candidate))
+        legacy = load(LEGACY)
+        legacy_codes = {w["code"] for w in audit_package.Audit(legacy).run().warnings}
+        self.assertIn("W_ABSENCE_AS_FACT", legacy_codes, "older packages get a warning, not an error")
 
     def test_career_change_is_wired(self):
         self.assertIn("references/career-change.md", read(os.path.join(SKILL, "SKILL.md")))

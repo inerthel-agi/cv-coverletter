@@ -7,7 +7,10 @@ One page. Specific to this company and role. Does not repeat the CV line by line
    research: a requirement of the posting). The paragraph cites it (`claims` or `requirements`).
 2. **Body** (1–2 paragraphs, 3–5 sentences each): one need per paragraph → candidate's best evidence →
    what it shows. Prefer the strongest project over a weaker job.
-3. **Gap** (optional, `addresses_gap: true`): honest, short, nearest evidence, ramp-up plan.
+3. **Gap** (optional, `addresses_gap: true`): honest and short. State what the documents do not show
+   ("My CV and project notes do not mention X"), then the nearest real evidence. A ramp-up plan only in the
+   candidate's own words from a saved reply; never "I have never…" or an invented commitment
+   ([project-evidence.md](project-evidence.md), "Absences and gaps").
 4. **Closing** (`contribution: true`): plausible contribution (hedged if based on a hypothesis), from
    `strategy.contribution`, invitation to talk.
 

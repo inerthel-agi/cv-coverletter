@@ -1,0 +1,19 @@
+{
+  "debrief": {
+    "rejection": {"sent": "2026-10-09", "received": "2026-10-10", "stage": "automatic", "message": "generic",
+                  "source": null},
+    "posting_now": "unverified",
+    "extraction_ok": true,
+    "hypotheses": [
+      {"rank": 1, "cause": "requirement-gap", "for": ["Kubernetes deployment is a required requirement and the CV holds no Kubernetes work"],
+       "against": ["Every other required requirement is evidenced"], "basis": ["R5"],
+       "action": "Keep Kubernetes a declared gap; state the Docker local setup of RouteWise and a dated learning step only if the candidate takes one"},
+      {"rank": 2, "cause": "knockout", "for": ["Rejection arrived the day after sending, at the automatic stage"],
+       "against": ["The candidate does not remember a screening question on Kubernetes"], "basis": ["R5"],
+       "action": "Ask the candidate which screening questions the portal asked and what they answered"},
+      {"rank": 3, "cause": "invisible", "for": ["The posting status today could not be checked"], "against": []}
+    ],
+    "questions": ["Which screening questions did the portal ask, and what did you answer?"],
+    "feedback_request": "Thank you for considering my application for the Junior Software Engineer role. Could you tell me which part of my profile fell short for this position? It would help me prepare for future openings at Brindlewood."
+  }
+}
